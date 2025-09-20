@@ -50,7 +50,8 @@ The easiest way to use the application is with the pre-built executable.
 1.  **Download:** Go to the Releases page and download the latest `MarantzRemote.exe` file.
 2.  **Run:** Double-click `MarantzRemote.exe` to start the server. The first time you run it, it will create a configuration file and then may close. This is normal.
 3.  **Configure:**
-    -   Navigate to `C:\ProgramData\Marantz SR6009 Remote\` and open the `config.json` file in a text editor (like Notepad).
+    -   The application creates its configuration file in `C:\ProgramData\Marantz SR6009 Remote\`. **Note:** The `ProgramData` folder is hidden by default in Windows. You can access it by typing `C:\ProgramData` directly into the address bar of File Explorer.
+    -   Open the `config.json` file in a text editor (like Notepad).
     -   You will see the following settings:
         ```json
         {
