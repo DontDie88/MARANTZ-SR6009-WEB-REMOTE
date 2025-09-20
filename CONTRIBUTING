@@ -1,0 +1,41 @@
+# Contributing to Marantz SR6009 Web Remote
+
+First off, thank you for considering contributing! This project is a labor of love, and every contribution is greatly appreciated.
+
+## How Can I Contribute?
+
+### Reporting Bugs
+
+If you find a bug, please ensure the bug was not already reported by searching on GitHub under [Issues](https://github.com/your-username/your-repo/issues).
+
+If you're unable to find an open issue addressing the problem, [open a new one](https://github.com/your-username/your-repo/issues/new). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
+
+### Suggesting Enhancements
+
+If you have an idea for a new feature or an enhancement to an existing one, please open an issue to discuss it. This allows us to coordinate efforts and ensure the feature aligns with the project's goals.
+
+1. Open a new issue with the "enhancement" label.
+2. Clearly describe the proposed enhancement and the motivation for it.
+3. If possible, provide examples of how the feature would be used.
+
+### Pull Requests
+
+Pull requests are the best way to propose changes to the codebase.
+
+1. Fork the repo and create your branch from `main`.
+2. If you've added code that should be tested, add tests.
+3. Ensure the test suite passes.
+4. Make sure your code lints (if a linter is configured).
+5. Issue that pull request!
+
+## Development Setup
+
+To get the development environment running, please follow the instructions in the For Developers section of the README.md.
+
+## Coding Style
+
+*   **Python**: Follow PEP 8 style guidelines. Use type hints where appropriate.
+*   **JavaScript**: Follow modern ES6+ standards. Use `const` and `let` over `var`. Keep code modular.
+*   **Comments**: Add comments to explain complex or non-obvious parts of the code. The "why" is often more important than the "what".
+
+Thank you again for your interest in contributing!
