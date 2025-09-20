@@ -1,0 +1,54 @@
+/* Custom colors for the theme */
+:root {
+    --bg-color: #000000; /* Black background */
+    --button-color: #CCFF00; /* Bright greenish-yellow */
+    --button-active-color: #AACC00; /* Darker shade for active state */
+    --text-color: #FFFFFF; /* White text for contrast */
+    /* NEW: RGB value for --text-color for use in rgba() */
+    --text-color-rgb: 255, 255, 255;
+    --mute-on-color: #FF0000; /* Red for muted state */
+    --mute-off-color: #CCFF00; /* Greenish-yellow for unmuted state */
+    /* NEW: RGB value for --mute-on-color */
+    --mute-on-color-rgb: 255, 0, 0;
+
+    /* NEW: RGB values for --button-color to be used in rgba() */
+    --button-color-rgb: 204, 255, 0;
+    /* NEW: Color and RGB values for the 'power off' glow */
+    --power-off-color: #FF4136; /* A clear red for 'off' state */
+    --power-off-color-rgb: 255, 65, 54;
+    /* NEW: Custom color for the 'power on' glow */
+    --power-on-glow-color: #00ff00; /* A vibrant green */
+    --power-on-glow-color-rgb: 0, 255, 0;
+    /* NEW: Add a color for the slider track glow */
+    --slider-glow-color: rgba(204, 255, 0, 0.5);
+
+    /* NEW: Colors for the reusable 3D button style. Change these to theme your 3D buttons. */
+    --btn-3d-bg-start: #293b00; /* Lighter shade for the top of the gradient */
+    --btn-3d-bg-end: #0b1500;   /* Darker shade for the bottom */
+    --btn-3d-border-color: #050a00; /* A very dark, near-black green for the border */
+
+    /* NEW: Colors for the 3D "plaque" style for section titles. */
+    --title-plaque-bg-start: #1a1a1a; /* Dark gray */
+    --title-plaque-bg-end: #0d0d0d;   /* Slightly darker gray */
+    --title-plaque-border-color: #000;
+    --title-plaque-highlight-color: rgba(255, 255, 255, 0.05);
+    --title-plaque-shadow-color: rgba(0, 0, 0, 0.4);
+
+    /* NEW: Colors for the "bubble" or "bevel" text effect on titles. */
+    --title-text-highlight: rgba(255, 255, 255, 0.5); /* A bright, semi-transparent white for the top highlight */
+    --title-text-shadow: rgba(0, 0, 0, 0.6);      /* A dark, semi-transparent black for the bottom shadow */
+
+    /* ==========================================================================
+       NEW: Responsive Sizing and Spacing Variables
+       ========================================================================== */
+
+    /* Fluid Typography */
+    --font-size-base: clamp(14px, 2.5vw, 16px); /* Base font size for the body */
+    --font-size-title: clamp(1.5rem, 5vw, 2.25rem); /* For main section titles */
+    --font-size-button: clamp(0.85rem, 2.5vw, 1rem); /* For text on buttons */
+
+    /* Fluid Layout & Spacing */
+    --spacing-unit: clamp(0.5rem, 2vw, 1rem); /* Base unit for padding, margins, gaps */
+    --container-padding: calc(var(--spacing-unit) * 2);
+    --grid-gap: var(--spacing-unit);
+}

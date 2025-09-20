@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marantz SR6009 Remote</title>
+    <!-- Favicon and App Icons -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon-96x96.png') }}" sizes="96x96">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='images/site.webmanifest') }}">
+    <meta name="apple-mobile-web-app-title" content="Marantz SR6009 Remote">    
+    <!-- Load local Tailwind CSS for long-term stability -->
+    <!-- The Inter font is a fallback, so removing the Google Fonts CDN makes the app fully offline-capable. -->
+    <script src="{{ url_for('static', filename='js/tailwind.js') }}"></script>
+    <!-- Link to external CSS file in the static directory -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
+</head>
+<body>
+    <!-- NEW: Loading spinner overlay, restored from original functionality -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p class="loading-text">Syncing with receiver...</p>
+    </div>
+
+    <div class="header">
+        <h1>Marantz SR6009 Remote</h1>
+        <div class="icon-wrapper">
+            <img src="{{ url_for('static', filename='images/CyclopsBustBG100x100.png') }}" alt="Cyclops Icon">
+        </div>
+    </div>
+
+    <!-- Status Display Area -->
+    <div id="statusDisplay" class="status-display">
+        <p>Power: <span id="powerStatus">N/A</span></p>
+        <p>Input: <span id="inputStatus">N/A</span></p>
+        <p>Volume: <span id="currentVolumeStatus">N/A</span></p>
+        <p>Sound: <span id="soundModeStatus">N/A</span></p>
+    </div>
+
+    <!-- REFACTORED: Zone Select Section -->
+    <div class="zone-power-wrapper">
+        <div class="zone-select-container bordered-section">
+            <h2 class="section-title section-title-small">ZONE SELECT</h2>
+            <!-- Button row remains below -->
+            <div id="zone-select-buttons" class="button-row">
+                <button type="button" class="circle-btn circle-btn-medium btn-layered-bg-circle" data-command="MAIN_ZONE_ON">
+                    <span class="btn-bg"></span>
+                    <span class="btn-content">MAIN</span>
+                </button>
+                <button class="btn-rect-medium btn-rect-styled" data-command="ZONE2_ON">ZONE2</button>
+            </div>
+        </div>
+        <button id="main-sleep-btn" class="btn-rect-medium btn-rect-styled">SLEEP</button>
+        <button type="button" id="main-power-btn" class="circle-btn btn-layered-bg-circle">
+  <span class="btn-bg"></span>
+  <span class="btn-content">
+    <span class="sr-only">Power</span>
+
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="power-icon-svg">
+      <defs>
+        <path id="power-icon-shape" d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42A6.92 6.92 0 0 1 19 12
+                 c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-1.71.62-3.28 1.59-4.41L5.17 5.17
+                 A8.932 8.932 0 0 0 3 12a9 9 0 1 0 18 0c0-2.7-1.19-5.14-3.17-6.83z"/>
+        <radialGradient id="powerOnFillGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+          <stop offset="0%" stop-color="#00aa00" /> <!-- Darker green for the center -->
+          <stop offset="100%" stop-color="var(--power-on-glow-color)" /> <!-- Vibrant green from CSS variable -->
+        </radialGradient>
+        <radialGradient id="powerOffFillGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+          <stop offset="0%" stop-color="#aa0000" /> <!-- Darker red for the center -->
+          <stop offset="100%" stop-color="var(--power-off-color)" /> <!-- Red from CSS variable -->
+        </radialGradient>
+        <!-- REFACTORED: A simpler filter to create a glowing outline effect. -->
+        <filter id="outlineGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <!-- Create a blurred halo from the source graphic (the stroke) -->
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/>
+          <!-- Merge all -->
+          <feMerge>
+            <feMergeNode in="blur"/> <!-- Draw the blurred halo -->
+            <feMergeNode in="SourceGraphic"/> <!-- Draw the original sharp stroke on top -->
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- REFACTORED: This group now renders the icon in two layers for a combined fill and glow effect. -->
+      <g class="glow-pulse">
+        <!-- Layer 1: The solid fill, now using a CSS variable to switch between gradients. -->
+        <use href="#power-icon-shape" fill="var(--power-icon-fill)"/>
+        <!-- Layer 2: The glowing outline, using the dynamic power state color. -->
+        <use href="#power-icon-shape" fill="none" stroke="var(--glow-color)" stroke-width="0.1" filter="url(#outlineGlow)"/>
+      </g>
+    </svg>
+
+  </span>
+</button>
+        </div>
+    </div>
+
+    <!-- Input Section -->
+    <section>
+        <h2 class="section-title">Inputs</h2>
+        <!-- NEW: Container to frame the input buttons -->
+        <div class="inputs-container">
+            <!-- EDITED: This grid is now dynamically generated by the backend -->
+            <div id="input-buttons-grid" class="inputs-grid-layout">
+                {% set items = input_names.items() | list %}
+                {% for i in range(items | length) %}
+                    {% set code, name = items[i] %}
+                    {# If this is the last item and it would be the 2nd on a 3-column row, insert a ghost element before it. #}
+                    {% if loop.last and (items | length) % 3 == 2 %}
+                        <div class="ghost-input-button"></div>
+                    {% endif %}
+                    {# The command name replaces '/' with '_' for consistency #}
+                    {% set command_name = 'INPUT_' + code.replace('/', '_') %}
+                    {% set response_code = 'SI' + code %}
+                    <button class="inputs-grid-button" data-command="{{ command_name }}" data-response-code="{{ response_code }}" data-input-code="{{ code }}">{{ name }}</button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Main controls container to limit width and center content -->
+    <div id="main-controls" class="main-controls-container">
+        <!-- Channel/Page, Volume, Mute (Top Controls Row) -->
+        <div class="flex justify-between items-center mt-4 w-full" id="topControlsRow">
+            <div class="flex flex-col items-center gap-2">
+                <button type="button" class="circle-btn circle-btn-medium btn-layered-bg-circle" data-command="TUNER_PRESET_UP">
+                    <span class="btn-bg"></span>
+                    <span class="btn-content">
+                        <span class="sr-only">Channel/Page Up</span>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 14l5-5 5 5z"/>
+                        </svg>
+                    </span>
+                </button>
+                <span class="button-label">CH/PAGE</span>
+                <button type="button" class="circle-btn circle-btn-medium btn-layered-bg-circle" data-command="TUNER_PRESET_DOWN">
+                    <span class="btn-bg"></span>
+                    <span class="btn-content">
+                        <span class="sr-only">Channel/Page Down</span>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 10l5 5 5-5z"/>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+
+            <div class="flex flex-col items-center">
+                <button type="button" id="mainMuteBtn" class="circle-btn circle-btn-medium mute-btn btn-layered-bg-circle">
+                    <span class="btn-bg"></span>
+                    <span class="btn-content">
+                        <span class="sr-only">Mute</span>
+                        <div class="mute-icon-wrapper">
+                            <img src="{{ url_for('static', filename='images/unmute.svg') }}" alt="Unmuted" class="mute-icon unmuted-icon">
+                            <img src="{{ url_for('static', filename='images/mute.svg') }}" alt="Muted" class="mute-icon muted-icon">
+                        </div>
+                    </span>
+                </button>
+                <span class="button-label">MUTE</span>
+            </div>
+
+            <!-- Vertical Volume Slider Section -->
+            <div class="vertical-slider-wrapper">
+                <input type="range" id="volumeSlider" min="0" max="98" step="0.5" value="50" class="volume-slider-input">
+                <span id="volumeSliderLabel" class="vertical-slider-label">Vol: 50.0</span> <!-- Displays slider value -->
+            </div>
+        </div>
+
+        <!-- Info & Option Buttons (New Row Below Top Controls) -->
+        <div class="flex justify-between w-full mt-16" id="infoOptionRow">
+            <button type="button" class="circle-btn circle-btn-medium btn-layered-bg-circle" data-command="MENU_INFO">
+                <span class="btn-bg"></span>
+                <span class="btn-content">INFO</span>
+            </button>
+            <button type="button" class="circle-btn circle-btn-medium btn-layered-bg-circle" data-command="MENU_OPTION">
+                <span class="btn-bg"></span>
+                <span class="btn-content">OPTION</span>
+            </button>
+        </div>
+    </div>
+
+    <!--
+        GRAND REFACTORING: DYNAMIC DISPLAY CONTAINER
+        This new container will hold both the "Now Playing" view and the "OSD" view.
+        JavaScript will be used to toggle which view is visible, creating a single,
+        dynamic display area in the center of the remote.
+        It has been moved here, between the main controls and the navigation pad.
+    -->
+    <div id="dynamic-display-container" class="dynamic-display-container">
+        <!-- View 1: Now Playing -->
+        <div id="now-playing-view" class="dynamic-view">
+            <div id="now-playing-container" class="now-playing-container">
+                <h2 id="track-header" class="now-playing-title">Now Playing</h2>
+                <div class="now-playing-info">
+                    <div class="info-row">
+                        <strong>Title:</strong>
+                        <div class="marquee-container"><span id="track-title">N/A</span></div>
+                    </div>
+                    <div class="info-row">
+                        <strong>Artist:</strong>
+                        <div class="marquee-container"><span id="track-artist">N/A</span></div>
+                    </div>
+                    <div class="info-row">
+                        <strong>Album:</strong>
+                        <div class="marquee-container"><span id="track-album">N/A</span></div>
+                    </div>
+                    <div class="static-info-row">
+                        <span id="track-samplerate">N/A</span>
+                        <span id="track-buffer" class="track-buffer"></span>
+                        <span id="station-info" class="station-info flex-grow-1"></span>
+                        <div class="time-percent-group">
+                            <span id="track-time">N/A</span>
+                            <span id="track-percent"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- View 2: On-Screen Display (OSD) -->
+        <div id="osd-view" class="dynamic-view">
+            <div id="virtual-osd-wrapper" class="virtual-osd-wrapper">
+                <div id="virtual-osd-frame" class="virtual-osd-frame"></div>
+                <div id="virtual-osd-content" class="virtual-osd-content">
+                    <h3 id="osd-title" class="osd-title"></h3>
+                    <ul id="osd-menu-list" class="osd-menu-list"></ul>
+                    <div id="osd-station-info" class="osd-station-info"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OSD Navigation -->
+    <h2 class="section-title">Navigation</h2>
+    <div id="nav-pad" class="nav-pad-container">
+        <!-- EDITED: Removed nav-pad-margin-right class. Spacing is now handled by the container. -->
+        <button class="circle-btn circle-btn-medium back-btn btn-3d" data-command="MENU_BACK">BACK</button>
+        <div>
+            <div class="d-pad">
+                <!-- The div is positioned by the grid, and the button is centered within it. -->
+                <div class="up-btn-wrapper">
+                    <button class="circle-btn up-btn btn-3d" data-command="CURSOR_UP">
+                        <span class="sr-only">Up</span>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 14l5-5 5 5z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="left-btn-wrapper">
+                    <button class="circle-btn left-btn btn-3d" data-command="CURSOR_LEFT">
+                        <span class="sr-only">Left</span>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14 7l-5 5 5 5z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="d-pad-center-wrapper">
+                    <button class="circle-btn center-btn btn-3d" data-command="CURSOR_ENTER">ENTER</button>
+                </div>
+                <div class="right-btn-wrapper">
+                    <button class="circle-btn right-btn btn-3d" data-command="CURSOR_RIGHT">
+                        <span class="sr-only">Right</span>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10 17l5-5-5-5z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="down-btn-wrapper">
+                    <button class="circle-btn down-btn btn-3d" data-command="CURSOR_DOWN">
+                        <span class="sr-only">Down</span>
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 10l5 5 5-5z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- EDITED: Removed nav-pad-margin-left class. Spacing is now handled by the container. -->
+        <button class="circle-btn circle-btn-medium setup-btn btn-3d" data-command="MENU_SETUP_ON">SETUP</button>
+    </div>
+
+    <!-- Tuner & Playback Controls -->
+    <div id="tuner-playback-section">
+        <div class="section-header-inline">
+            <h2 class="section-title">Tuner & Playback</h2>
+        </div>
+        <div class="tuner-playback-container">
+            <div class="tuner-playback-row">
+                <button id="preset-up-btn" data-command="TUNER_PRESET_UP" class="circle-btn circle-btn-medium btn-3d">PRESET +</button>
+                <button id="preset-down-btn" data-command="TUNER_PRESET_DOWN" class="circle-btn circle-btn-medium btn-3d">PRESET -</button>
+            </div>
+            <div id="favorites-button-container">
+                <button id="add-to-favorites-btn" class="circle-btn playback-btn-large btn-3d" data-command="FAVORITES_ADD">
+                    <span class="sr-only">Add to Favorites</span>
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </button>
+            </div>
+            <div class="tuner-playback-row">
+                <button id="play-previous-btn" class="circle-btn playback-btn-large btn-3d">
+                    <span class="sr-only">Previous</span>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11 18V6l-8.5 6 8.5 6zm.5-6L20 6v12l-8.5-6z"/>
+                    </svg>
+                </button>
+                <button id="play-pause-toggle-btn" class="circle-btn playback-btn-large btn-3d">
+                    <span class="sr-only">Play/Pause</span>
+                    <div class="play-pause-icon-wrapper">
+                        <svg class="play-icon" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        <svg class="pause-icon" viewBox="0 0 24 24">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                        </svg>
+                    </div>
+                </button>
+                <button id="play-next-btn" class="circle-btn playback-btn-large btn-3d">
+                    <span class="sr-only">Next</span>
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M13 18V6l8.5 6-8.5 6zM4 18V6l8.5 6-8.5 6z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="tuner-playback-row">
+                <button id="tune-up-btn" data-command="TUNER_TUNE_UP" class="circle-btn circle-btn-medium btn-3d">TUNE +</button>
+                <div class="ghost-spacer"></div>
+                <button id="tune-down-btn" data-command="TUNER_TUNE_DOWN" class="circle-btn circle-btn-medium btn-3d">TUNE -</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Smart Select -->
+    <div class="bordered-section">
+        <h2 class="section-title">Smart Select</h2>
+        <div id="smart-select-grid" class="button-grid button-grid-4-col">
+            <button class="btn-grid-item" data-command="SMART_SELECT_1" data-response-code="MSSMART1">1</button>
+            <button class="btn-grid-item" data-command="SMART_SELECT_2" data-response-code="MSSMART2">2</button>
+            <button class="btn-grid-item" data-command="SMART_SELECT_3" data-response-code="MSSMART3">3</button>
+            <button class="btn-grid-item" data-command="SMART_SELECT_4" data-response-code="MSSMART4">4</button>
+        </div>
+    </div>
+
+    <!-- Sound Mode -->
+    <div class="bordered-section">
+        <h2 class="section-title">Sound Mode</h2>
+        <div id="sound-mode-grid" class="button-grid button-grid-4-col">
+            <button id="sound-mode-btn-movie" class="btn-grid-item" data-menu-type="surround">MOVIE</button>
+            <button id="sound-mode-btn-music" class="btn-grid-item" data-menu-type="surround">MUSIC</button>
+            <button id="sound-mode-btn-game" class="btn-grid-item" data-menu-type="surround">GAME</button>
+            <button id="sound-mode-btn-pure" class="btn-grid-item" data-menu-type="pure">PURE</button>
+        </div>
+        <!-- NEW: Container for the contextual sub-menu. JS will populate this. -->
+        <div id="sound-mode-submenu-container" class="sound-mode-submenu-container">
+            <!-- Sub-menu buttons will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Marantz Branding -->
+    <div class="branding-container">
+        <p class="branding-title">marantz</p>
+        <p class="branding-subtitle">RC025SR</p>
+    </div>
+
+    <!-- Other Sections (Moved to bottom for remote layout focus) -->
+
+    <!-- Audio Adjustments Section -->
+    <div id="audio-adjustments-section" class="section mt-6 collapsible-section">
+        <div class="section-header">
+            <h2 class="section-title">Audio Adjustments</h2>
+            <button class="toggle-icon-button">
+                <span class="sr-only">Toggle Audio Adjustments</span>
+                <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </button>
+        </div>
+        <div class="section-content">
+            <div class="settings-group">
+                <h3>Tone Control</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="TONE_CONTROL_ON">On</button>
+                    <button class="btn-setting" data-command="TONE_CONTROL_OFF">Off</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Dialog Level</h3>
+                <div class="slider-container">
+                    <!-- The label will now be updated by JS to show .5 steps -->
+                    <span id="dialogSliderLabel" class="slider-label">Dialog: 0.0 dB</span>
+                    <!-- The slider now uses the receiver's native range (38-62) with 0.5 steps -->
+                    <input type="range" id="dialogSlider" min="38" max="62" step="0.5" value="50">
+                </div>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="DIALOG_LEVEL_ADJUST_ON">On</button>
+                    <button class="btn-setting" data-command="DIALOG_LEVEL_ADJUST_OFF">Off</button>
+                    <button class="btn-setting" data-command="DIALOG_LEVEL_UP">Up</button>
+                    <button class="btn-setting" data-command="DIALOG_LEVEL_DOWN">Down</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Reference Level Offset</h3>
+                <div class="button-group">
+                    <button id="refLevelCycleBtn" class="btn-setting">Offset: 0 dB</button>
+                </div>
+            </div>
+            <!-- REFACTORED: Replaced old Subwoofer/LFE controls with a single, clear "Subwoofer Level Adjust" section -->
+            <div class="settings-group">
+                <h3>Subwoofer Level Adjust</h3>
+                <div class="slider-container">
+                    <span id="subLevelAdjustLabel" class="slider-label">Level: 0.0 dB</span>
+                    <input type="range" id="subLevelAdjustSlider" min="38" max="62" step="0.5" value="50">
+                </div>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="SUB_LEVEL_ADJUST_UP">Up</button>
+                    <button class="btn-setting" data-command="SUB_LEVEL_ADJUST_DOWN">Down</button>
+                </div>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="SUB_LEVEL_ADJUST_ON">On</button>
+                    <button class="btn-setting" data-command="SUB_LEVEL_ADJUST_OFF">Off</button>
+                </div>
+            </div>
+            <!-- NEW: Center Gain Adjust section, modeled after Subwoofer Level Adjust -->
+            <div class="settings-group">
+                <h3>Center Gain</h3>
+                <div class="slider-container">
+                    <span id="centerGainLabel" class="slider-label">Gain: 0.0 dB</span>
+                    <input type="range" id="centerGainSlider" min="0" max="1" step="0.1" value="0">
+                </div>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="CENTER_GAIN_UP">Up</button>
+                    <button class="btn-setting" data-command="CENTER_GAIN_DOWN">Down</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>M-DAX</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="MDAX_OFF">Off</button>
+                    <button class="btn-setting" data-command="MDAX_LOW">Low</button>
+                    <button class="btn-setting" data-command="MDAX_MEDIUM">Medium</button>
+                    <button class="btn-setting" data-command="MDAX_HIGH">High</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Cinema EQ</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="CINEMA_EQ_ON">On</button>
+                    <button class="btn-setting" data-command="CINEMA_EQ_OFF">Off</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Dynamic EQ</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="DYNAMIC_EQ_ON">On</button>
+                    <button class="btn-setting" data-command="DYNAMIC_EQ_OFF">Off</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Dynamic Volume</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="DYNAMIC_VOLUME_OFF">Off</button>
+                    <button class="btn-setting" data-command="DYNAMIC_VOLUME_LIGHT">Light</button>
+                    <button class="btn-setting" data-command="DYNAMIC_VOLUME_MEDIUM">Medium</button>
+                    <button class="btn-setting" data-command="DYNAMIC_VOLUME_HEAVY">Heavy</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Graphic EQ</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="GRAPHIC_EQ_ON">On</button>
+                    <button class="btn-setting" data-command="GRAPHIC_EQ_OFF">Off</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Dynamic Range Compression</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="DYNAMIC_RANGE_COMPRESSION_OFF">Off</button>
+                    <button class="btn-setting" data-command="DYNAMIC_RANGE_COMPRESSION_LOW">Low</button>
+                    <button class="btn-setting" data-command="DYNAMIC_RANGE_COMPRESSION_MEDIUM">Medium</button>
+                    <button class="btn-setting" data-command="DYNAMIC_RANGE_COMPRESSION_HIGH">High</button>
+                </div>
+            </div>
+            <div id="video-select-group" class="settings-group">
+                <h3>Video Select</h3>
+                <p class="text-xs text-gray-400 mb-2">Assign a video source to the current audio-only input.</p>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="VIDEO_SELECT_ON">On</button>
+                    <button class="btn-setting" data-command="VIDEO_SELECT_OFF">Off</button>
+                </div>
+                <div class="input-group mt-2">
+                    <label for="videoSelectDropdown" class="mr-2">Source:</label>
+                    {% set video_select_sources = ['DVD', 'BD', 'TV', 'SAT/CBL', 'MPLAY', 'GAME', 'AUX1', 'AUX2', 'CD'] %} {# EDITED: Added class for styling #}
+                    <select id="videoSelectDropdown" class="select-osd-styled">
+                        {# EDITED: This dropdown is now dynamically generated #}
+                        {% for code in video_select_sources %}
+                            {% if code in input_names %}
+                                {# The command name replaces '/' with '_' for consistency #}
+                                {% set command_name = 'VIDEO_SELECT_' + code.replace('/', '_') %}
+                                <option value="{{ command_name }}" data-input-code="{{ code }}">{{ input_names.get(code, code) }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Audyssey Dynamic Compression</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="AUDYSSEY_DYN_COMP_AUTO">Auto</button>
+                    <button class="btn-setting" data-command="AUDYSSEY_DYN_COMP_OFF">Off</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Channel Levels Section -->
+    <div id="channel-levels-section" class="section collapsible-section">
+        <div class="section-header">
+            <h2 class="section-title">Channel Levels</h2>
+            <button class="toggle-icon-button">
+                <span class="sr-only">Toggle Channel Levels</span>
+                <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </button>
+        </div>
+        <div class="section-content">
+            <!-- EDITED: The grid is now empty. JS will dynamically create and add channel items. -->
+            <div id="channel-levels-grid" class="channel-levels-grid"></div>
+        </div>
+        <!-- NEW: Editor section for adjusting the selected channel level -->
+        <div id="channel-level-editor" class="channel-level-editor">
+            <h3 id="channel-editor-title">Select a Channel to Edit</h3>
+            <div class="slider-container">
+                <span id="channel-editor-slider-label" class="slider-label">Level: 0.0 dB</span>
+                <input type="range" id="channel-editor-slider" min="-12" max="12" step="0.5" value="0">
+            </div>
+            <div class="button-group justify-center">
+                <button data-command="CHANNEL_VOLUME_RESET">Reset All Levels</button>
+            </div>
+            <!-- NEW: Contextual controls for the subwoofer master on/off -->
+            <div id="subwoofer-power-controls" class="subwoofer-power-controls">
+                <h4 class="sub-editor-title">Master Config</h4>
+                <button id="subwoofer-editor-toggle-btn" class="btn-rect-medium">Toggle Subwoofer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Settings Section -->
+    <div id="video-settings-section" class="section collapsible-section">
+        <div class="section-header">
+            <h2 class="section-title">Video Settings</h2>
+            <button class="toggle-icon-button">
+                <span class="sr-only">Toggle Video Settings</span>
+                <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </button>
+        </div>
+        <div class="section-content">
+            <div class="settings-group">
+                <h3>Picture Mode</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="PICTURE_MODE_OFF">Off</button>
+                    <button class="btn-setting" data-command="PICTURE_MODE_STANDARD">Standard</button>
+                    <button class="btn-setting" data-command="PICTURE_MODE_MOVIE">Movie</button>
+                    <button class="btn-setting" data-command="PICTURE_MODE_VIVID">Vivid</button>
+                    <button class="btn-setting" data-command="PICTURE_MODE_STREAM">Stream</button>
+                    <button class="btn-setting" data-command="PICTURE_MODE_CUSTOM">Custom</button>
+                    <button class="btn-setting" data-command="PICTURE_MODE_ISF_DAY">ISF Day</button>
+                    <button class="btn-setting" data-command="PICTURE_MODE_ISF_NIGHT">ISF Night</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Dynamic Noise Reduction (DNR)</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="DNR_OFF">Off</button>
+                    <button class="btn-setting" data-command="DNR_LOW">Low</button>
+                    <button class="btn-setting" data-command="DNR_MID">Mid</button>
+                    <button class="btn-setting" data-command="DNR_HIGH">High</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Utilities Section -->
+    <div id="system-utilities-section" class="section collapsible-section">
+        <div class="section-header">
+            <h2 class="section-title">System Utilities</h2>
+            <button class="toggle-icon-button">
+                <span class="sr-only">Toggle System Utilities</span>
+                <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </button>
+        </div>
+        <div class="section-content">
+            <div class="settings-group">
+                <h3>ECO Mode</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="ECO_MODE_ON">On</button>
+                    <button class="btn-setting" data-command="ECO_MODE_AUTO">Auto</button>
+                    <button class="btn-setting" data-command="ECO_MODE_OFF">Off</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Sleep Timer</h3>
+                <div class="input-group">
+                    <input type="number" id="sleepTimerInput" placeholder="1-120 mins" min="1" max="120">
+                    <button id="set-sleep-timer-btn" class="btn-setting">Set Timer</button>
+                </div>
+                <div class="button-row justify-center">
+                    <button class="btn-setting" data-command="SLEEP_OFF">Sleep Off</button>
+                </div>
+            </div>
+            <!-- NEW: Input Rename UI -->
+            <div class="settings-group">
+                <h3>Input Rename</h3>
+                <div class="input-group">
+                    <select id="input-rename-select" class="select-osd-styled" style="flex-grow: 2;">
+                        <option value="">-- Select Input --</option>
+                        {% for code, name in input_names.items() %}
+                        <option value="{{ code }}">{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group mt-2">
+                    <input type="text" id="input-rename-text" placeholder="Enter new name" class="flex-grow">
+                    <button id="input-rename-apply-btn" class="btn-setting">Apply</button>
+                </div>
+                <button id="input-rename-reset-btn" class="btn-setting w-full mt-2">Reset All Names</button>
+            </div>
+            <div class="settings-group">
+                <h3>System Locks</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="SYSTEM_REMOTE_LOCK_ON">Remote On</button>
+                    <button class="btn-setting" data-command="SYSTEM_REMOTE_LOCK_OFF">Remote Off</button>
+                    <button class="btn-setting" data-command="SYSTEM_PANEL_LOCK_ON">Panel On</button>
+                    <button class="btn-setting" data-command="SYSTEM_PANEL_LOCK_OFF">Panel Off</button>
+                    <button class="btn-setting" data-command="SYSTEM_PANEL_V_LOCK_ON">Panel+V On</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Trigger Outputs</h3>
+                <div class="button-group">
+                    <button class="btn-setting" data-command="TRIGGER_1_ON">Trigger 1 On</button>
+                    <button class="btn-setting" data-command="TRIGGER_1_OFF">Trigger 1 Off</button>
+                    <button class="btn-setting" data-command="TRIGGER_2_ON">Trigger 2 On</button>
+                    <button class="btn-setting" data-command="TRIGGER_2_OFF">Trigger 2 Off</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tuner Control Section (Detailed) -->
+    <div id="tuner-control-detailed-section" class="section collapsible-section">
+        <div class="section-header">
+            <h2 class="section-title">Tuner Control</h2>
+            <button class="toggle-icon-button">
+                <span class="sr-only">Toggle Tuner Control</span>
+                <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </button>
+        </div>
+        <div class="section-content">
+            <div class="settings-group">
+                <h3>Tuner Status</h3>
+                <div class="status-display-group">
+                    <span id="tunerFreqStatus" class="tuner-status-value">Freq: --.--</span>
+                    <span id="tunerPresetStatus" class="tuner-status-value">Preset: --</span>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Tuner Mode</h3>
+                <!-- Add data-response-code for state highlighting -->
+                <div class="button-group tuner-mode-group">
+                    <button data-command="TUNER_MODE_AM" data-response-code="TMANAM">AM</button>
+                    <button data-command="TUNER_MODE_FM" data-response-code="TMANFM">FM</button>
+                    <button data-command="TUNER_MODE_AUTO" data-response-code="TMANAUTO">Auto (Analog)</button>
+                    <button data-command="TUNER_MODE_MANUAL" data-response-code="TMANMANUAL">Manual (Analog)</button>
+                    <button data-command="TUNER_MODE_HD_AM" data-response-code="TMHDAM">HD AM</button>
+                    <button data-command="TUNER_MODE_HD_FM" data-response-code="TMHDFM">HD FM</button>
+                    <button data-command="TUNER_MODE_HD_AUTO" data-response-code="TMHDAUTOHD">HD Auto</button>
+                    <button data-command="TUNER_MODE_HD_MANUAL" data-response-code="TMHDMANUAL">HD Manual</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Frequency Adjustment</h3>
+                <div class="button-group">
+                    <button data-command="TUNER_TUNE_UP">Analog Freq Up</button>
+                    <button data-command="TUNER_TUNE_DOWN">Analog Freq Down</button>
+                    <button data-command="TUNER_FREQ_HD_UP">HD Freq Up</button>
+                    <button data-command="TUNER_FREQ_HD_DOWN">HD Freq Down</button>
+                </div>
+                <div class="input-group mt-4">
+                    <input type="number" id="analogFreqInput" placeholder="AM/FM Freq">
+                    <button id="set-analog-freq-btn">Set Analog Freq</button>
+                </div>
+                <div class="input-group">
+                    <input type="number" id="hdFreqInput" placeholder="HD Freq">
+                    <button id="set-hd-freq-btn">Set HD Freq</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Preset Control</h3>
+                <div class="button-group">
+                    <button data-command="TUNER_PRESET_UP">Analog Preset Up</button>
+                    <button data-command="TUNER_PRESET_DOWN">Analog Preset Down</button>
+                    <button data-command="TUNER_PRESET_HD_UP">HD Preset Up</button>
+                    <button data-command="TUNER_PRESET_HD_DOWN">HD Preset Down</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zone 2 Control Section -->
+    <div id="zone2-control-section" class="section collapsible-section">
+        <div class="section-header">
+            <h2 class="section-title">Zone 2 Control</h2>
+            <button class="toggle-icon-button">
+                <span class="sr-only">Toggle Zone 2 Control</span>
+                <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </button>
+        </div>
+        <div class="section-content">
+            <div class="settings-group">
+                <!-- EDITED: Replaced separate On/Off buttons with a single stateful toggle button inside a button-group for consistent styling. -->
+                <div class="button-group">
+                    <button id="zone2PowerBtn">Zone 2 Power</button>
+                </div>
+                <div class="slider-container mt-4">
+                    <span id="zone2VolumeSliderLabel" class="slider-label">Z2 Vol: 50</span>
+                    <input type="range" id="zone2VolumeSlider" min="0" max="99" value="50">
+                </div>
+                <!-- EDITED: Refactored to match the main mute button's structure for visual and functional consistency. -->
+                <div class="flex flex-col items-center my-4">
+                    <button id="zone2MuteBtn" class="circle-btn circle-btn-medium mute-btn">
+                        <span class="sr-only">Mute Zone 2</span>
+                        <div class="mute-icon-wrapper">
+                            <img src="{{ url_for('static', filename='images/unmute.svg') }}" alt="Unmuted" class="mute-icon unmuted-icon">
+                            <img src="{{ url_for('static', filename='images/mute.svg') }}" alt="Muted" class="mute-icon muted-icon">
+                        </div>
+                    </button>
+                    <span class="button-label">MUTE</span>
+                </div>
+            </div>
+            <div class="settings-group">
+                <h3>Zone 2 Inputs</h3>
+                <!-- EDITED: Replaced unsupported inputs with a curated list of supported Zone 2 inputs based on documentation. -->
+                <div id="zone2-input-grid" class="button-grid">
+                    <button data-command="Z2CD" data-response-code="Z2CD">CD</button>
+                    <button data-command="Z2DVD" data-response-code="Z2DVD">DVD</button>
+                    <button data-command="Z2BT" data-response-code="Z2BT">Bluetooth</button>
+                    <button data-command="Z2TUNER" data-response-code="Z2TUNER">Tuner</button>
+                    <button data-command="Z2FVP" data-response-code="Z2FVP">Favorites</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load local Socket.IO client for long-term stability -->
+    <script src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+
+    <!-- Link to the main JavaScript file as a module.
+         The browser will handle importing all other necessary script files. -->
+    <script src="{{ url_for('static', filename='js/script.js') }}" type="module"></script>
+
+</body>
+</html>

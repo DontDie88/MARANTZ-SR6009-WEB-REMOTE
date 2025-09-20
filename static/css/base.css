@@ -1,0 +1,255 @@
+/* Define the custom font 'Shlop' */
+@font-face {
+    font-family: 'Shlop';
+    /* Use a local path for the font file. */
+    /* Ensure 'shlop-rg.otf' is located in a 'fonts' directory next to the 'css' directory. */
+    src: url('../fonts/shlop-rg.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* REFACTORED: The .glow-pulse class now uses the new innerOuterPulse animation. */
+.glow-pulse {
+  animation: innerOuterPulse 3s infinite ease-in-out;
+}
+
+/* --- Accessibility Improvements --- */
+
+/* NEW: Visually hide an element, but keep it available for screen readers.
+   Use this for adding descriptive text to icon-only buttons. */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* NEW: Styles for the loading spinner overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* EDITED: Removed background overlay and set pointer-events to none.
+       This makes the overlay invisible and allows the user to scroll and interact with the page while loading. */
+    display: flex;
+    flex-direction: column; /* Stack spinner and text */
+    /* EDITED: Center the spinner in the middle of the viewport. */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.loading-overlay.is-loading {
+    opacity: 1;
+    /* EDITED: The parent overlay is now non-interactive, so this is no longer needed. */
+    /* pointer-events: auto; */
+}
+
+.spinner {
+    width: 150px;
+    height: 150px;
+    border: 6px solid rgba(var(--button-color-rgb), 0.3);
+    border-top-color: var(--button-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    /* NEW: Add a drop-shadow to make the spinner visible against any background without a dark overlay. */
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.8));
+}
+.loading-text {
+    color: var(--button-color);
+    margin-top: 1.5rem;
+    font-size: 1.2rem;
+    /* NEW: Add a text-shadow to make the text more readable against any background. */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+html, body {
+    overflow-x: visible; /* Ensure horizontal content is not clipped */
+    zoom: 1; /* Reset any zoom level */
+    transform: scale(1); /* Reset any CSS transform scaling */
+    -webkit-text-size-adjust: none; /* Prevent iOS text scaling */
+    text-size-adjust: none; /* Prevent other browser text scaling */
+    width: 100%; /* Use 100% to avoid horizontal scrollbars */
+}
+
+body {
+    font-family: 'Inter', sans-serif; /* Use Inter for general text */
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    /* REFACTORED: Use fluid padding and font size from variables. */
+    padding: var(--container-padding);
+    box-sizing: border-box;
+    position: relative;
+    overflow-y: auto; /* Allow scrolling */
+    font-size: var(--font-size-base);
+}
+
+.header {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* New container for the icon */
+.icon-wrapper {
+    margin-top: 1rem; /* Space between title and icon */
+    /* Removed margin-right as it's no longer side-by-side */
+}
+
+.header img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+h1 {
+    font-family: 'Shlop', sans-serif;
+    font-size: clamp(4rem, 10vw + 1rem, 6.25rem) !important; /* 100px at max, scales down */
+    line-height: 1;
+    margin: 0;
+    font-weight: normal;
+    color: rgba(0, 0, 0, 0.6); /* Dark, semi-transparent text */
+    -webkit-text-stroke: 1px #00b500; /* The requested outline/stroke */
+    animation: pulse-text-glow-simple 4s infinite ease-in-out;
+}
+
+.section-title {
+    font-family: 'Shlop', sans-serif;
+    color: var(--button-color);
+    text-align: center;
+    /* Restored original margins */
+    margin-top: 0rem;
+    margin-bottom: 1rem;
+    font-size: clamp(3.0rem, 8vw + 1rem, 4.5rem); /* Fluidly scales font size */
+    font-weight: normal; /* ADDED for consistency and debugging */
+    animation: pulse-text-glow 4s infinite ease-in-out; /* Apply the glow animation */
+}
+/* NEW: Modifier for smaller section titles */
+.section-title-small {
+    font-size: 2.25rem; /* Half of 4.5rem */
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+h3 {
+    color: var(--button-color);
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: var(--spacing-unit);
+    font-size: var(--font-size-title);
+    text-shadow: 0 0 5px rgba(204, 255, 0, 0.5);
+}
+
+/* NEW: A container to visually group related settings within collapsible sections */
+.settings-group {
+    border: 1px solid rgba(var(--button-color-rgb), 0.2);
+    border-radius: 0.75rem;
+    padding: var(--container-padding);
+    margin-bottom: calc(var(--spacing-unit) * 1.5);
+    background-color: rgba(var(--button-color-rgb), 0.03);
+}
+.settings-group:last-child {
+    margin-bottom: 0;
+}
+
+/* NEW: A reusable class to give any button a 3D, pressable appearance. */
+.btn-3d {
+    background: linear-gradient(180deg, var(--btn-3d-bg-start), var(--btn-3d-bg-end)); /* Use variables for theming */
+    border: 1px solid var(--btn-3d-border-color); /* Use variable for theming */
+    /* The 3D effect comes from layering two inset shadows: a highlight and a shadow. */
+    /* EDITED: Increased offset, blur, and contrast of shadows for a deeper 3D effect. */
+    box-shadow:
+        /* Highlight (from top-left) */
+        inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+        /* Shadow (from bottom-right) */
+        inset -2px -2px 4px rgba(0, 0, 0, 0.6);
+    transition: box-shadow 0.1s ease, background 0.1s ease;
+}
+
+/* When the button is pressed, flip the highlights and shadows to make it look "pushed in". */
+.btn-3d:active {
+    background: linear-gradient(180deg, var(--btn-3d-bg-end), var(--btn-3d-bg-start)); /* Invert the gradient using variables */
+    /* EDITED: Flipped shadows are also deeper to match the default state. */
+    box-shadow:
+        /* Highlight (from bottom-right, more subtle when pressed) */
+        inset -2px -2px 5px rgba(255, 255, 255, 0.1),
+        /* Shadow (from top-left, appears as a deeper press) */
+        inset 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+/* --- START: Layered SVG Background for Circular Buttons --- */
+
+/* NEW: A reusable class for any CIRCULAR button that needs a layered SVG background. */
+.btn-layered-bg-circle {
+    position: relative; /* Establishes a positioning context for the inner spans. */
+    overflow: hidden;   /* Ensures the background doesn't spill out. */
+    background: none;   /* The base button should have no background itself. */
+    border: none;       /* The SVG background includes its own border. */
+}
+
+/* NEW: Add button-like behavior for when these classes are on a div */
+.btn-layered-bg-circle,
+.btn-layered-bg-rect {
+    display: inline-flex; /* Use inline-flex to behave like a button in a row */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none; /* Prevent text selection on a double-click */
+    text-align: center;
+    font-weight: bold; /* Re-apply font-weight from the original button style */
+    /* NEW: Add a transition for hover/active effects */
+    transition: transform 0.1s ease-in-out;
+}
+
+.btn-layered-bg-circle:hover,
+.btn-layered-bg-rect:hover {
+    transform: translateY(-2px);
+}
+.btn-layered-bg-circle:active,
+.btn-layered-bg-rect:active {
+    transform: translateY(1px);
+}
+
+/* NEW: The background layer span. It sits behind the content. */
+.btn-layered-bg-circle .btn-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/shnyrndbtn.svg');
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat; /* Ensure the background doesn't tile */
+    z-index: 1; /* Place it behind the content. */
+}
+
+/* NEW: The content layer span. It sits on top of the background. */
+.btn-layered-bg-circle .btn-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}

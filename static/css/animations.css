@@ -1,0 +1,144 @@
+/* MODIFIED: Keyframes now use a variable for color, making it reusable */
+@keyframes pulse-glow {
+    /* REVERTED: The keyframes are now a simple outer glow pulse. */
+    0% {
+        box-shadow: 0 0 8px rgba(var(--glow-color-rgb), 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(var(--glow-color-rgb), 0.9), 0 0 30px rgba(var(--glow-color-rgb), 0.6);
+    }
+    100% {
+        box-shadow: 0 0 8px rgba(var(--glow-color-rgb), 0.5);
+    }
+}
+
+/* NEW: Keyframes for a performant opacity-based glow animation. */
+@keyframes pulse-opacity-glow {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.6;
+    }
+}
+
+/* NEW: Keyframes for the inner and outer SVG glow pulsing effect. */
+/* This animates the opacity of the SVG group, which contains the filter effect. */
+@keyframes innerOuterPulse {
+  0%   { opacity: 0.4; }
+  50%  { opacity: 0.85; }
+  100% { opacity: 0.4; }
+}
+
+/* NEW: Keyframes for the pulsing text glow animation */
+@keyframes pulse-text-glow {
+    0% {
+        text-shadow:
+            /* EDITED: Removed blur for a sharper, chiseled effect while keeping depth */
+            -1px -1px 0 var(--title-text-highlight), /* Top-left highlight */
+            1px 1px 0 var(--title-text-shadow),      /* Bottom-right shadow */
+            /* Original glow */
+            0 0 10px var(--button-color);
+    }
+    50% {
+        text-shadow:
+            /* EDITED: Removed blur for a sharper, chiseled effect while keeping depth */
+            -1px -1px 0 var(--title-text-highlight),
+            1px 1px 0 var(--title-text-shadow),
+            /* Original glow */
+            0 0 20px var(--button-color), 0 0 30px rgba(var(--button-color-rgb), 0.7);
+    }
+    100% {
+        text-shadow:
+            /* EDITED: Removed blur for a sharper, chiseled effect while keeping depth */
+            -1px -1px 0 var(--title-text-highlight),
+            1px 1px 0 var(--title-text-shadow),
+            /* Original glow */
+            0 0 10px var(--button-color);
+    }
+}
+
+/* NEW: Keyframes for the original, simple text glow (for H1) */
+@keyframes pulse-text-glow-simple {
+    0% {
+        text-shadow: 0 0 10px var(--button-color);
+    }
+    50% {
+        text-shadow: 0 0 20px var(--button-color), 0 0 30px rgba(var(--button-color-rgb), 0.7);
+    }
+    100% {
+        text-shadow: 0 0 10px var(--button-color);
+    }
+}
+
+/* NEW: Keyframes for the marquee (scrolling text) animation */
+@keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* NEW: Keyframes for a seamless, continuous marquee scroll.
+   Moves the element by half its width, perfect for duplicated content. */
+@keyframes continuous-marquee-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+/* NEW: Keyframes for the 'falling shimmer' animated gradient. */
+/* This creates a gentle, unidirectional shimmer effect. */
+@keyframes animated-gradient {
+    from { background-position: 50% 400%; } /* EDITED: Start from the bottom */
+    to { background-position: 50% 0%; }   /* EDITED: End at the top, creating a "falling" effect */
+}
+
+/* NEW: Keyframes for the subtle text update animation */
+@keyframes fade-slide-in-subtle {
+    from {
+        opacity: 0.5;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* NEW: Keyframes for a command failure visual feedback */
+@keyframes flash-error-shadow {
+    0% { box-shadow: none; }
+    50% { box-shadow: 0 0 0 4px rgba(var(--mute-on-color-rgb), 0.8); }
+    100% { box-shadow: none; }
+}
+
+/* NEW: Keyframes for a command success visual feedback */
+@keyframes flash-success-shadow {
+    0% { box-shadow: none; }
+    50% { box-shadow: 0 0 0 4px rgba(var(--button-color-rgb), 0.8); }
+    100% { box-shadow: none; }
+}
+
+/* NEW: Keyframes for a subtle pulsing/breathing effect for the volume label during ramp-up */
+@keyframes pulse-volume-label {
+    0% {
+        transform: translateY(2rem) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(2rem) scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(2rem) scale(1);
+        opacity: 1;
+    }
+}
+
+/* NEW: Keyframes for the loading spinner rotation */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

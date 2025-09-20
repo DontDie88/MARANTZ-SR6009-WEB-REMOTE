@@ -1,0 +1,1804 @@
+@import 'variables.css';
+@import 'animations.css';
+@import 'base.css';
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--primary-font), sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    gap: 1.5rem;
+    box-sizing: border-box;
+    min-height: 100vh;
+}
+
+/* --- Status Display --- */
+ /* This styling is restored from the original stylesheet to match the intended layout. */
+.status-display {
+    background-color: rgba(204, 255, 0, 0.08);
+    border: 1px solid var(--button-color);
+    border-radius: 0.75rem;
+    width: clamp(280px, 90vw, 675px);
+    padding: var(--container-padding);
+    margin: var(--spacing-unit) auto calc(var(--spacing-unit) * 2);
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    color: var(--text-color);
+    box-shadow: 0 0 10px rgba(var(--button-color-rgb), 0.4);
+}
+
+.status-display p {
+    margin: 0.3rem 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.status-display p span {
+    font-weight: bold;
+    color: var(--button-color);
+    margin-left: 0.2rem;
+}
+
+/* --- Generic Button & Row Layouts --- */
+/* This is a base style for buttons that don't have a more specific class.
+   It's used in places like the Channel Level editor. */
+button {
+    background-color: var(--button-color);
+    color: var(--bg-color);
+    padding: 1.2rem 1rem;
+    border: 5px solid rgba(var(--button-color-rgb), 0.5);
+    border-radius: 0.9rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    flex-grow: 0;
+    min-width: 70px;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* A simple flexbox row for buttons */
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.inputs-container {
+    box-sizing: border-box;
+    width: 95%;
+    border-radius: 8px;
+    max-width: 675px;
+    margin: var(--spacing-unit) auto 0;
+    box-shadow: 0 0 10px rgba(var(--button-color-rgb), 0.4);
+}
+
+/* --- START: Cloned & Specialized Inputs Grid Component --- */
+
+.inputs-grid-layout {
+    /* EDITED: Switched from Flexbox to CSS Grid for a true, uniform grid.
+       Using a fixed 3-column layout to enable the "ghost button" trick for the last row. */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--grid-gap);
+    padding: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* This class modifies the base 'button' style for the Inputs section.
+   It overrides colors, sizing, and text styles for a unique look. */
+.inputs-grid-button {
+    background-image: url('../images/mtlrectblkbtn.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 2px solid var(--button-color);
+    background-clip: padding-box;
+
+    transition: box-shadow 0.1s ease, background 0.1s ease, transform 0.1s ease, color 0.1s ease;
+    padding: var(--spacing-unit);
+    font-size: var(--font-size-button);
+    white-space: nowrap;
+    /* Font Rendering */
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: var(--text-color);
+    text-shadow: 0 0 5px rgba(var(--text-color-rgb), 0.7);
+}
+
+/* Cloned hover, active, and .active states */
+.inputs-grid-button:hover {
+    transform: translateY(-3px);
+}
+.inputs-grid-button:active {
+    transform: translateY(1px);
+}
+.inputs-grid-button:active::before,
+.inputs-grid-button:active::after {
+    opacity: 0; /* Hide the highlights when pressed */
+}
+
+.inputs-grid-button.active {
+    box-shadow: 0 0 5px var(--button-color), 0 0 15px var(--button-color), 0 0 25px rgba(var(--button-color-rgb), 0.9);
+    border-color: var(--button-color); /* Make the border brighter when active */
+}
+
+/* NEW: A "ghost" element to create an empty, space-occupying cell in the inputs grid. */
+.ghost-input-button {
+    /* This element takes up space in the grid but is not visible. */
+    visibility: hidden;
+}
+
+/* --- END: Cloned & Specialized Inputs Grid Component --- */
+
+/* A dedicated style for rectangular buttons like SLEEP and ZONE2 */
+.btn-rect-styled {
+    background-image: url('../images/mtlrectblkbtn.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 2px solid var(--button-color);
+    background-clip: padding-box;
+    color: var(--text-color);
+    text-shadow: 0 0 5px rgba(var(--text-color-rgb), 0.7);
+    transition: box-shadow 0.1s ease, background 0.1s ease, transform 0.1s ease, color 0.1s ease;
+}
+
+.btn-rect-styled:hover {
+    transform: translateY(-3px);
+}
+
+.btn-rect-styled:active {
+    transform: translateY(1px);
+}
+
+/* NEW: A dedicated class for items in our main button grids. */
+/* This provides precise control over font size and ensures uniform height. */
+.btn-grid-item {
+    font-size: clamp(0.70rem, 3.5vw, 1.20rem);
+    height: 100%;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(180deg, var(--btn-3d-bg-start), var(--btn-3d-bg-end));
+    color: var(--text-color);
+    border: 1px solid var(--btn-3d-border-color);
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.6);
+    transition: box-shadow 0.1s ease, background 0.1s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background-color: var(--button-active-color);
+    transform: translateY(-3px);
+}
+
+button:active {
+    background-color: var(--button-active-color);
+    transform: translateY(0);
+}
+
+/* Add the "pressed" effect for the 3D grid buttons */
+.btn-grid-item:active {
+    background: linear-gradient(180deg, var(--btn-3d-bg-end), var(--btn-3d-bg-start));
+    box-shadow:
+        inset -2px -2px 5px rgba(255, 255, 255, 0.1),
+        inset 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+/* Specific rule to make the text glow when a grid item is active. */
+.btn-grid-item.active {
+    color: var(--button-color);
+}
+
+/* Class to apply the error flash animation to a button */
+.command-failed {
+    animation: flash-error-shadow 0.6s ease-out;
+}
+
+/* Class to apply the success flash animation to a button */
+.command-success {
+    animation: flash-success-shadow 0.6s ease-out;
+}
+
+/* Add a visible focus style for keyboard navigation.
+   This improves accessibility without affecting mouse users. */
+button:focus-visible,
+input[type="range"]:focus-visible {
+    outline: 2px solid var(--button-active-color);
+    outline-offset: 3px;
+}
+/* Generic style for any active button to make it glow */
+.button-grid button.active {
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.6),
+        0 0 8px var(--button-color), 0 0 20px var(--button-color), 0 0 40px rgba(var(--button-color-rgb), 0.8);
+    border-color: var(--button-color);
+    color: var(--button-color);
+}
+
+/* A distinct style for the main sound mode button whose category is open */
+#sound-mode-grid button.active-category {
+    background-color: var(--button-active-color);
+    /* EDITED: Changed text color to the main theme color for better visibility. */
+    color: var(--button-color);
+    /* EDITED: Added a subtle glow to the text and a deeper inset shadow. */
+    text-shadow: 0 0 8px rgba(var(--button-color-rgb), 0.5);
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.6);
+}
+
+/* Styles for the Sound Mode sub-menu feature */
+.sound-mode-submenu-container {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s ease-in-out;
+    overflow: hidden;
+}
+
+.sound-mode-submenu-container.is-open {
+    grid-template-rows: 1fr; /* Expand to content height */
+}
+
+/* This inner div is required for the grid animation to work correctly */
+.sound-mode-submenu-content {
+    min-height: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    justify-content: center;
+}
+
+/* Style for the individual buttons inside the sub-menu */
+.sound-mode-submenu-content button {
+    flex-grow: 1;
+    flex-basis: 120px;
+    background-image: url(../images/mtlrectblkbtn.svg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: var(--button-color);
+    border: 1px solid #1d1e1a96;
+    font-size: 0.9rem;
+    padding: 1.2rem 1rem;
+}
+
+/* Style for the active state of the subwoofer editor toggle button */
+#subwoofer-editor-toggle-btn.active {
+    background-color: var(--power-on-glow-color);
+    color: var(--bg-color);
+    box-shadow: 0 0 8px var(--power-on-glow-color);
+    border-color: var(--power-on-glow-color);
+}
+
+/* --- START: Layered SVG Background for Rectangular Buttons --- */
+
+/* A reusable class for any RECTANGULAR button that needs a layered SVG background. */
+.btn-layered-bg-rect {
+    position: relative;
+    overflow: hidden;
+    background: none;
+    border: none;
+    padding: 0 !important;
+}
+
+/* The background layer for rectangular buttons. */
+.btn-layered-bg-rect .btn-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../images/mtlrectblkbtn.svg');
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+}
+
+/* The content layer for rectangular buttons. */
+.btn-layered-bg-rect .btn-content {
+    position: relative;
+    z-index: 2;
+    padding: 0.5rem 1rem;
+    color: var(--text-color);
+    text-shadow: 0 0 5px rgba(var(--text-color-rgb), 0.7);
+}
+
+/* Specific styles for circular buttons */
+.circle-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 1.7rem;
+    /* display: flex; */
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* aspect-ratio: 1 / 1; */
+    border: 1px solid var(--button-color);
+    flex-grow: 0;
+}
+/* Apply the pulsing glow animation to the main power button. */
+/* The default glow color is set to the 'off' state red. */
+#main-power-btn {
+    width: clamp(120px, 20vw, 200px);
+    height: clamp(120px, 20vw, 200px);
+    animation: pulse-glow 3s infinite ease-in-out;
+    --glow-color-rgb: var(--power-off-color-rgb);
+    --glow-color: var(--power-off-color);
+    --power-icon-fill: url(#powerOffFillGradient);
+    /* Prevent the flex container from squashing the button on narrow screens */
+    flex-shrink: 0;
+}
+
+/* When the power button has the .power-on class, switch the glow color. */
+#main-power-btn.power-on {
+    --glow-color-rgb: var(--power-on-glow-color-rgb);
+    --glow-color: var(--power-on-glow-color);
+    --power-icon-fill: url(#powerOnFillGradient);
+}
+
+/* Restore the active "pressed" state for the power button. */
+#main-power-btn:active {
+    transform: translateY(1px);
+    animation: none;
+}
+
+/* Restore the styling for the SVG icon inside the power button. */
+#main-power-btn svg {
+    width: 75%;
+    height: 75%;
+    fill: none;
+}
+
+/* Modifier for medium rectangular buttons like ZONE2 and SLEEP */
+.btn-rect-medium {
+    min-width: clamp(70px, 12vw, 90px);
+    padding: clamp(0.4rem, 1.5vw, 0.6rem) clamp(0.8rem, 2.5vw, 1.2rem);
+    font-size: clamp(0.65rem, 2.25vw, 0.9rem);
+}
+
+/* Modifier class for smaller circle buttons */
+.circle-btn-medium {
+    width: 100px;
+    height: 100px;
+    font-size: 1.2rem;
+    border-width: 1px;
+}
+
+/* Modifier for even smaller circle buttons, like the Favorites button */
+.circle-btn-small {
+    width: 80px;
+    height: 80px;
+    font-size: 1rem;
+    border-width: 2px;
+}
+
+/* Ensure SVGs inside small circle buttons are scaled appropriately */
+.circle-btn-small svg {
+    width: 40px;
+    height: 40px;
+}
+
+/* Styling for text labels under buttons like MUTE and CH/PAGE */
+.button-label {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    opacity: 0.75;
+    margin-top: 0.25rem;
+}
+
+/* Styling for SVG icons inside buttons */
+button svg {
+    fill: var(--text-color);
+    transition: fill 0.2s ease, filter 0.2s ease;
+}
+button:hover svg {
+    fill: var(--text-color);
+}
+
+/* Restore a default size for SVGs inside medium circle buttons */
+.circle-btn-medium svg {
+    width: 65px;
+    height: 65px;
+}
+
+/* Styling for mute button icons using <img> */
+.mute-icon-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mute-icon {
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	transition: opacity 0.2s ease-in-out;
+	filter: invert(1) drop-shadow(0 0 3px rgba(var(--button-color-rgb), 0.7));
+}
+.mute-icon.unmuted-icon { opacity: 1; }
+.mute-icon.muted-icon { opacity: 0; }
+.mute-btn.mute-on .unmuted-icon { opacity: 0; }
+.mute-btn.mute-on .muted-icon {
+    opacity: 1;
+}
+
+/* Styling for the dynamic play/pause icon */
+.play-pause-icon-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.play-pause-icon-wrapper .play-icon,
+.play-pause-icon-wrapper .pause-icon {
+    position: absolute;
+    width: 95%;
+    height: 95%;
+    transition: opacity 0.2s ease-in-out;
+    fill: var(--text-color);
+}
+/* Default state: show play, hide pause */
+.play-pause-icon-wrapper .pause-icon { opacity: 0; }
+.play-pause-icon-wrapper .play-icon { opacity: 1; }
+
+/* When .is-playing class is added to the button */
+button.is-playing .play-pause-icon-wrapper .play-icon { opacity: 0; }
+button.is-playing .play-pause-icon-wrapper .pause-icon { opacity: 1; }
+
+
+/* Specific styling for input groups */
+.input-group {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.input-group input[type="number"],
+.input-group input[type="text"] {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--button-color);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-color);
+    font-size: 1rem;
+    width: 120px;
+    text-align: center;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.input-group input[type="number"]::-webkit-outer-spin-button,
+.input-group input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-group button {
+    flex: 0 1 auto;
+    min-width: 100px;
+    padding: 0.75rem 1rem;
+}
+
+/* --- Custom Form Elements --- */
+/* REFACTORED: Custom styling for any dropdown to match the OSD theme. */
+.select-osd-styled {
+    background-color: var(--bg-color); /* Black background */
+    color: #008000; /* OSD green text */
+    border: 1px solid var(--button-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* Custom dropdown arrow using an inlined SVG, colored with the theme's button color */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23CCFF00' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    /* Attempt to influence the highlight color in modern browsers */
+    accent-color: var(--button-color);
+}
+
+/* Style for the options within the dropdown list */
+.select-osd-styled option {
+    background-color: var(--bg-color); /* Black background for the dropdown list */
+    color: #008000; /* OSD green text */
+}
+
+/* NEW: Add a hover effect to the dropdown options for better feedback.
+   While we can't reliably change the final selection color, we can style the hover state. */
+.select-osd-styled option:hover {
+    background-color: var(--button-color); /* Greenish-yellow highlight */
+    color: var(--bg-color); /* Black text for contrast on highlight */
+}
+
+/* Container for the vertical slider and its label */
+/* This div needs to be relatively positioned to contain the absolutely positioned slider */
+.vertical-slider-wrapper {
+    position: relative;
+    width: 110px;
+    height: 410px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 0 0.1rem;
+    border: 4px solid rgba(var(--button-color-rgb), 0.5);
+    border-radius: 1.25rem;
+    padding: 0;
+    background-color: var(--bg-color);
+    box-shadow: 0 0 10px rgba(var(--button-color-rgb), 0.4);
+    /* FIX: Prevent the browser from hijacking touch events for scrolling on the slider track. */
+    touch-action: none;
+}
+
+/* Vertical Slider Input Styling (Applied directly to the input) */
+.volume-slider-input {
+    -webkit-appearance: none;
+    appearance: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    --slider-length: 400px;
+    width: var(--slider-length);
+    height: 100px;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    background: linear-gradient(to right,
+        /* Seg 1 */ rgba(var(--button-color-rgb), 0.10) 0%, rgba(var(--button-color-rgb), 0.10) 5%, transparent 5%, transparent 6%,
+        /* Seg 2 */ rgba(var(--button-color-rgb), 0.16) 6%,  rgba(var(--button-color-rgb), 0.16) 12%, transparent 12%, transparent 13%,
+        /* Seg 3 */ rgba(var(--button-color-rgb), 0.22) 13%, rgba(var(--button-color-rgb), 0.22) 20%, transparent 20%, transparent 21%,
+        /* Seg 4 */ rgba(var(--button-color-rgb), 0.28) 21%, rgba(var(--button-color-rgb), 0.28) 29%, transparent 29%, transparent 30%,
+        /* Seg 5 */ rgba(var(--button-color-rgb), 0.34) 30%, rgba(var(--button-color-rgb), 0.34) 39%, transparent 39%, transparent 40%,
+        /* Seg 6 */ rgba(var(--button-color-rgb), 0.40) 40%, rgba(var(--button-color-rgb), 0.40) 50%, transparent 50%, transparent 51%,
+        /* Seg 7 */ rgba(var(--button-color-rgb), 0.46) 51%, rgba(var(--button-color-rgb), 0.46) 62%, transparent 62%, transparent 63%,
+        /* Seg 8 */ rgba(var(--button-color-rgb), 0.52) 63%, rgba(var(--button-color-rgb), 0.52) 75%, transparent 75%, transparent 76%,
+        /* Seg 9 */ rgba(var(--button-color-rgb), 0.58) 76%, rgba(var(--button-color-rgb), 0.58) 89%, transparent 89%, transparent 90%,
+        /* Seg 10*/ rgba(var(--button-color-rgb), 0.65) 90%, rgba(var(--button-color-rgb), 0.65) 100%
+    );
+    outline: none;
+    border-radius: 1rem;
+    overflow: hidden;
+    cursor: row-resize;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    touch-action: none;
+}
+
+/* Thumb styling for Webkit (Chrome, Safari) */
+.volume-slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 0;
+    height: 0;
+    box-shadow: calc(var(--slider-length) * -1) 0 0 var(--slider-length) rgba(var(--button-color-rgb), 0.6);
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    transition: box-shadow 0.2s ease;
+}
+
+.volume-slider-input::-webkit-slider-thumb:hover {
+    box-shadow: calc(var(--slider-length) * -1) 0 0 var(--slider-length) rgba(var(--button-color-rgb), 0.75);
+}
+
+/* Add a glow effect when the thumb is being actively dragged */
+.volume-slider-input:active::-webkit-slider-thumb {
+    box-shadow: calc(var(--slider-length) * -1) 0 0 var(--slider-length) rgba(var(--button-color-rgb), 0.9), 0 0 25px 10px rgba(var(--button-color-rgb), 0.7);
+}
+
+/* Thumb styling for Firefox */
+.volume-slider-input::-moz-range-thumb {
+    border: none;
+    width: 0;
+    height: 0;
+    box-shadow: calc(var(--slider-length) * -1) 0 0 var(--slider-length) rgba(var(--button-color-rgb), 0.6);
+    border-radius: 50%;
+    background: transparent;
+    transition: box-shadow 0.2s ease;
+}
+
+.volume-slider-input::-moz-range-thumb:hover {
+    box-shadow: calc(var(--slider-length) * -1) 0 0 var(--slider-length) rgba(var(--button-color-rgb), 0.75);
+}
+
+/* NEW: Add a glow effect when the thumb is being actively dragged */
+.volume-slider-input:active::-moz-range-thumb {
+    box-shadow: calc(var(--slider-length) * -1) 0 0 var(--slider-length) rgba(var(--button-color-rgb), 0.9), 0 0 25px 10px rgba(var(--button-color-rgb), 0.7);
+}
+
+/* Label for the vertical slider */
+.vertical-slider-label {
+    color: var(--button-color);
+    font-weight: bold;
+    font-size: 1.1rem;
+    position: absolute;
+    bottom: 0;
+    transform: translateY(2rem);
+    white-space: nowrap;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Class to apply the ramping animation to the volume label */
+.vertical-slider-label.volume-ramping {
+    animation: pulse-volume-label 1.5s infinite ease-in-out;
+}
+
+
+/* Mute button specific styling for state feedback */
+button.mute-on {
+    background-color: var(--mute-on-color);
+}
+button.mute-on:hover {
+    background-color: #CC0000;
+}
+button.mute-on:active {
+    background-color: #990000;
+}
+
+/* --- Navigation Pad Layout Fix --- */
+/* This is the main flex container that holds the Back button, the D-pad, and the Setup button. */
+.nav-pad-container {
+    display: flex;
+    /* EDITED: Center the D-pad wrapper. The side buttons will be positioned absolutely. */
+    justify-content: center;
+    align-items: flex-start;
+    /* EDITED: Add position: relative to create a positioning context for the absolute buttons. */
+    position: relative;
+    width: 100%;
+    max-width: 725px;
+    margin: 2rem auto; /* Keep vertical margin, horizontal is now controlled by max-width */
+    /* EDITED: Use responsive padding to tighten spacing on small screens. */
+    padding: 0 clamp(1.5rem, 8vw, 3rem);
+    box-sizing: border-box;
+}
+
+/* This is the grid container for the 5-way D-pad buttons. */
+.d-pad {
+    display: grid;
+    /* EDITED: Define the columns and rows with a responsive size directly.
+       The grid is now sized to fit the largest button (ENTER), ensuring all cells are square. */
+    grid-template-columns: repeat(3, clamp(90px, 24vw, 120px));
+    grid-template-rows: repeat(3, clamp(90px, 24vw, 120px));
+    gap: 1rem; /* Adjusted gap for the new sizing. */
+    /* NEW: Center the wrappers within their grid cells. */
+    justify-items: center;
+    align-items: center;
+}
+
+/* Positioning for buttons within the d-pad grid */
+/* EDITED: Selectors now target the wrapper divs that will be added to the HTML. */
+.d-pad .up-btn-wrapper { grid-area: 1 / 2 / 2 / 3; }
+.d-pad .left-btn-wrapper { grid-area: 2 / 1 / 3 / 2; }
+.d-pad .d-pad-center-wrapper { grid-area: 2 / 2 / 3 / 3; }
+.d-pad .right-btn-wrapper { grid-area: 2 / 3 / 3 / 4; }
+.d-pad .down-btn-wrapper { grid-area: 3 / 2 / 4 / 3; }
+
+/* NEW: The center wrapper fills its grid cell completely and centers its content. */
+.d-pad .d-pad-center-wrapper {
+    width: 95%;
+    height: 95%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* NEW: The directional wrappers are sized to be smaller than their grid cell. */
+.d-pad .up-btn-wrapper,
+.d-pad .down-btn-wrapper,
+.d-pad .left-btn-wrapper,
+.d-pad .right-btn-wrapper {
+    width: clamp(50px, 19vw, 95px);
+    height: auto;
+    aspect-ratio: 1 / 1;
+}
+
+/* EDITED: All buttons now simply fill 100% of their parent wrapper. */
+.d-pad .circle-btn {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+/* EDITED: This rule now only needs to set the font size, as the sizing is handled above. */
+.d-pad .center-btn {
+    font-size: clamp(1.2rem, 4vw, 1.5rem); /* Responsive font size */
+}
+
+/* Ensure arrow SVGs in nav pad are larger */
+.d-pad .circle-btn .icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.d-pad .circle-btn svg {
+    fill: var(--text-color);
+    width: 140%;
+    height: 140%;
+    overflow: visible;
+}
+
+/* Nudge the arrow icons towards the edges of their buttons */
+.d-pad .up-btn svg {
+    transform: translateY(-3%);
+}
+.d-pad .down-btn svg {
+    transform: translateY(3%);
+}
+.d-pad .left-btn svg {
+    transform: translateX(-3%);
+}
+.d-pad .right-btn svg {
+    transform: translateX(3%);
+}
+
+/* Override the default thick border for nav-pad buttons when they have the 3D style. */
+.d-pad .btn-3d {
+    border: 3px solid var(--btn-3d-border-color);
+}
+
+/* Apply the "secret formula" to the Back and Setup buttons for responsive scaling.
+   This rule is more specific than .circle-btn-medium, so it takes precedence. */
+.nav-pad-container > .circle-btn-medium {
+    /* EDITED: Position the buttons absolutely within the container. */
+    position: absolute;
+    top: 0; /* Align to the top of the container */
+    width: clamp(50px, 14vw, 70px);
+    height: auto;
+    aspect-ratio: 1 / 1;
+    font-size: clamp(0.8rem, 2.5vw, 1rem);
+    border: 3px solid var(--btn-3d-border-color);
+    /* NEW: Add z-index to ensure they render on top of the D-pad if they overlap. */
+    z-index: 10;
+}
+
+/* NEW: Specific positioning for the Back and Setup buttons. */
+.nav-pad-container .back-btn {
+    left: clamp(1.5rem, 8vw, 3rem); /* Match the container's padding */
+}
+
+.nav-pad-container .setup-btn {
+    right: clamp(1.5rem, 8vw, 3rem); /* Match the container's padding */
+}
+
+/* Refactored to use Flexbox for a fluid, self-leveling layout.
+   This makes all buttons in a group the same size and wraps intelligently. */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+/* NEW: Style the buttons within the group to be flexible and have responsive text. */
+.button-group button {
+    flex-grow: 1;
+    flex-basis: 100px;
+    font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+    padding: 0.8rem 0.5rem;
+}
+
+/* Container for the main control area to limit its width */
+.main-controls-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 725px;
+    margin: 1rem auto;
+    margin-bottom: 2rem;
+    /* EDITED: Use responsive padding to tighten spacing on small screens. */
+    padding: 0 clamp(1.5rem, 8vw, 3rem);
+    box-sizing: border-box;
+}
+
+/* Container for the left-aligned Zone Select section */
+.zone-select-container {
+    width: 100%;
+    max-width: 675px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+/* Wrapper to position the Zone Select box and Power button together */
+.zone-power-wrapper {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 7vw, 3rem);
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+    margin: 1rem auto 0;
+    box-sizing: border-box;
+}
+
+/* The bordered section now needs space on the right for the power button */
+.zone-select-container.bordered-section {
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    width: auto;
+    flex-shrink: 0;
+    margin-top: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* Target the title and button row specifically within this container */
+.zone-select-container .section-title {
+    text-align: center;
+    margin-top: 0;
+}
+/* Shrink the title inside the zone select box */
+.zone-select-container .section-title-small {
+    font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+    margin-bottom: 0.375rem;
+}
+
+.zone-select-container .button-row {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+/* A specific rule for the circular "Main Zone On" button inside this container.
+   This overrides the rectangular button styles that would otherwise make it oval. */
+.zone-select-container .circle-btn-medium {
+    width: clamp(60px, 10vw, 75px);
+    height: clamp(66px, 10vw, 75px);
+    padding: 0;
+    font-size: clamp(0.6rem, 1.5vw, 0.75rem);
+    border-width: 2px;
+}
+
+.zone-select-container .btn-rect-medium {
+    min-width: clamp(50px, 8vw, 60px);
+    padding: clamp(0.25rem, 1vw, 0.375rem) clamp(0.5rem, 2vw, 0.75rem);
+    font-size: clamp(0.6rem, 1.5vw, 0.75rem);
+}
+
+/* Media query for mobile responsiveness of top controls */
+@media (max-width: 640px) {
+    /* On mobile, instead of wrapping, we scale down the components to fit. */
+
+    /* Change 3-column grids to 2 columns on mobile */
+    .button-grid-3-col {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Scale down the vertical slider and its container */
+    .vertical-slider-wrapper {
+        width: 95px;
+        height: 312px;
+        margin: 0 0.2rem;
+    }
+
+    .volume-slider-input {
+        --slider-length: 300px;
+        height: 80px;
+    }
+}
+
+/* NEW: Media query to scale down main controls on smaller mobile screens */
+@media (max-width: 500px) {
+    /* Scale down the buttons in the main controls area by ~20% */
+    #main-controls .circle-btn-medium {
+        width: 80px;
+        height: 80px;
+        font-size: 1rem; /* 1.2rem * 0.8 = 0.96rem, rounded to 1rem */
+    }
+
+    /* Scale down the SVG icons inside those buttons */
+    #main-controls .circle-btn-medium svg {
+        width: 52px; /* 65px * 0.8 = 52px */
+        height: 52px;
+    }
+
+    /* Scale down the vertical slider container by ~12% */
+    .vertical-slider-wrapper {
+        width: 93px;  /* 110px * 0.88 = 96.8px */
+        height: 312px; /* 410px * 0.88 = 360.8px */
+        border-radius: 1.50rem;
+    }
+}
+
+/* The active glow for mobile was incorrectly placed outside the media query.
+   It is now correctly defined on the base selector, so it works on all screen sizes. */
+.volume-slider-input:active::-moz-range-thumb {
+    box-shadow: calc(var(--slider-length) * -1) 0 0 var(--slider-length) var(--button-active-color), 0 0 20px 8px rgba(var(--button-color-rgb), 0.7);
+}
+
+/* --- Horizontal Sliders (Generic & Refactored) --- */
+.slider-container {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 1rem;
+    --slider-track-height: 10px;
+    --slider-track-radius: 10px;
+    --slider-thumb-size: 24px;
+    --slider-thumb-border-width: 3px;
+    --slider-thumb-margin-top: 0px;
+    /* FIX: Prevent the browser from hijacking touch events for scrolling on the slider track. */
+    touch-action: none;
+}
+/* Combined rule for all horizontal slider tracks. */
+.slider-container input[type="range"] {
+    flex-grow: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: var(--slider-track-height);
+    background: linear-gradient(90deg, var(--slider-glow-color) 0%, rgba(var(--button-color-rgb), 0.2) 0%);
+    outline: none;
+    border-radius: var(--slider-track-radius);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 5px var(--slider-glow-color), inset 0 0 3px rgba(0,0,0,0.5);
+    transition: background-color 0.2s ease;
+}
+/* CONSOLIDATED: Combined rule for all horizontal slider thumbs (WebKit). */
+.slider-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: var(--slider-thumb-size);
+    height: var(--slider-thumb-size);
+    background: var(--bg-color);
+    border-radius: 50%;
+    border: var(--slider-thumb-border-width) solid var(--button-color);
+    cursor: pointer;
+    margin-top: var(--slider-thumb-margin-top);
+    box-shadow: 0 0 10px var(--slider-glow-color), 0 0 5px var(--button-color);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+/* CONSOLIDATED: Combined rule for all horizontal slider thumbs (Mozilla). */
+.slider-container input[type="range"]::-moz-range-thumb {
+    width: var(--slider-thumb-size);
+    height: var(--slider-thumb-size);
+    background: var(--bg-color);
+    border-radius: 50%;
+    border: var(--slider-thumb-border-width) solid var(--button-color);
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--slider-glow-color), 0 0 5px var(--button-color);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* NEW: Add a hover/active effect to the thumb for better feedback */
+.slider-container input[type="range"]:active::-webkit-slider-thumb,
+.slider-container input[type="range"]:active::-moz-range-thumb {
+    box-shadow: 0 0 15px var(--button-color), 0 0 8px var(--button-color);
+    transform: scale(1.1);
+}
+
+/* CONSOLIDATED: A single, robust style for all disabled elements.
+   This rule now handles all visual states and prevents interaction. */
+.disabled,
+button.disabled,
+button:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    transform: none !important;
+    animation: none !important;
+    background-color: #444 !important;
+    box-shadow: none !important;
+}
+
+/* NEW: Media query to handle the 4-column grids on smaller screens */
+@media (max-width: 512px) {
+    .button-grid-4-col {
+        /* Switch to a 2x2 layout on viewports 512px and smaller */
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .inputs-grid-button {
+        /* Reduce font size on smaller screens by ~15% to prevent text from wrapping */
+        font-size: clamp(0.7rem, 2.2vw, 0.85rem);
+    }
+}
+
+/* NEW: Media query to prevent title wrapping on very narrow screens */
+@media (max-width: 425px) {
+    .section-title {
+        /* Prevent the text from wrapping to a new line */
+        white-space: nowrap;
+        /* Adjust the font size to be smaller on these screens */
+        font-size: clamp(2.2rem, 10vw, 2.8rem);
+    }
+}
+
+/* NEW: Media query to scale down playback controls on very narrow screens */
+@media (max-width: 420px) {
+    .playback-controls {
+        /* Scale down the entire component by redefining its variables */
+        --playback-gap: 0.75rem;
+        --playback-btn-size: 75px;
+        --playback-btn-font-size: 1.2rem;
+        --playback-play-btn-size: 110px;
+        --playback-play-btn-font-size: 2rem;
+        --playback-play-btn-border-width: 6px;
+    }
+}
+
+/* NEW: Styling for bordered sections */
+.bordered-section {
+    border: 2px solid var(--button-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
+    /* NEW: Constrain width on larger screens and center it */
+    max-width: 675px; /* EDITED: Increased by 25% */
+    margin: 3rem auto 0; /* Combines margin-top with auto horizontal margins */
+}
+
+/* NEW: Styling for the generic .section containers at the bottom */
+.section {
+    width: 100%;
+    max-width: 675px; /* EDITED: Increased by 25% */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 1rem; /* Give some horizontal padding */
+    box-sizing: border-box;
+}
+
+/* --- Accordion Styles for Collapsible Sections --- */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem 0; /* Add some padding to make the clickable area larger */
+}
+
+/* MODIFIED: Styles for the toggle icon button to create a circular hover effect. */
+.toggle-icon-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+
+    /* This is the key for the round shape */
+    border-radius: 50%;
+
+    /* Set a fixed size slightly larger than the icon for a "tight" highlight area. */
+    /* The icon itself is 48x48px. */
+    width: 56px;
+    height: 56px;
+
+    /* Center the SVG icon inside the button */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Add a smooth transition for the hover effect */
+    transition: background-color 0.2s ease-in-out;
+}
+
+.toggle-icon-button:hover {
+    background-color: rgba(var(--text-color-rgb), 0.1); /* A subtle highlight. Adjust color as needed. */
+}
+
+.toggle-icon {
+    width: 48px; /* Larger, more tappable icon */
+    height: 48px;
+    fill: var(--button-color);
+    transition: transform 0.3s ease-in-out;
+}
+
+.collapsible-section {
+    display: grid;
+    grid-template-rows: auto 0fr;
+    transition: grid-template-rows 0.4s ease-in-out;
+}
+
+.collapsible-section.is-open {
+    grid-template-rows: auto 1fr;
+}
+
+.collapsible-section .section-content {
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: padding 0.4s ease-in-out;
+}
+
+.collapsible-section.is-open .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* --- Toast Notification System --- */
+/* This container holds and positions all toast notifications at the bottom-center. */
+.notification-container {
+    /* EDITED: Changed from fixed to absolute to allow positioning relative to the document scroll. */
+    /* The 'top' property will now be set dynamically by JavaScript. */
+    position: absolute;
+    top: 0; /* Initial value, will be updated by JS */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000; /* Ensure it appears above other content */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none; /* The container itself should not capture mouse events. */
+}
+
+/* Base style for an individual toast message to match the app's theme. */
+.toast {
+    background-color: rgba(var(--bg-color-rgb), 0.8); /* Dark, semi-transparent background */
+    backdrop-filter: blur(5px); /* Frosted glass effect */
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--button-color);
+    box-shadow: 0 0 10px rgba(var(--button-color-rgb), 0.5);
+    /* NEW: Apply Shlop font and styling */
+    font-family: 'Shlop', sans-serif;
+    font-size: 1.5rem; /* Larger font size to match headers */
+    font-weight: normal;
+    color: transparent; /* Make the text fill transparent */
+    -webkit-text-stroke: 1px var(--button-color); /* Add the outline */
+    text-shadow: 0 0 8px var(--button-color); /* Add the glow */
+    opacity: 0;
+    transform: translateY(20px); /* Start slightly below final position */
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: auto; /* Re-enable pointer events for the toast itself. */
+}
+
+/* Style for when the toast is visible */
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Modifier for error toasts. */
+.toast.error {
+    background-color: rgba(var(--mute-on-color-rgb), 0.2); /* Use theme's red color */
+    border-color: var(--mute-on-color);
+    box-shadow: 0 0 10px rgba(var(--mute-on-color-rgb), 0.7);
+    /* NEW: Apply error color to the text outline and glow */
+    -webkit-text-stroke-color: var(--mute-on-color);
+    text-shadow: 0 0 8px var(--mute-on-color);
+}
+
+/* Modifier for success toasts. */
+.toast.success {
+    background-color: rgba(var(--power-on-glow-color-rgb), 0.8); /* Use theme's green color */
+    border-color: var(--power-on-glow-color);
+    box-shadow: 0 0 10px rgba(var(--power-on-glow-color-rgb), 0.7);
+    /* NEW: Apply success color to the text outline and glow */
+    -webkit-text-stroke-color: var(--power-on-glow-color);
+    text-shadow: 0 0 8px var(--power-on-glow-color);
+}
+
+/* --- Dynamic Display Container --- */
+/* This is the new parent container for both Now Playing and OSD views. */
+.dynamic-display-container {
+    position: relative;
+    border-radius: 8px;
+    width: clamp(280px, 90vw, 675px);
+    background: transparent;
+    background-size: 100%;
+    box-sizing: border-box;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    opacity: 0;
+}
+
+/* VISIBLE STATE: When the .is-active class is added, it expands and fades in. */
+.dynamic-display-container.is-active {
+    opacity: 1; 
+    transform: scale(1);
+    pointer-events: auto;
+    margin: calc(var(--spacing-unit)) auto;
+    padding: 0rem;
+    overflow: visible;
+}
+
+/* The two views inside the dynamic container. Hidden by default. */
+.dynamic-view {
+    display: none;
+    width: 100%;
+}
+
+/* The class that makes a view visible. */
+.dynamic-view.is-visible {
+    display: block;
+}
+
+.now-playing-container {
+    padding: 1rem;
+    color: var(--text-color);
+    background: linear-gradient(180deg, rgba(var(--button-color-rgb), 0.05), rgba(var(--button-color-rgb), 0.2), rgba(var(--button-color-rgb), 0.05));
+    background-size: 100% 400%;
+    transform: scale(0.95);
+    border-radius: 8px;
+    box-sizing: border-box;
+    box-shadow: 0 0 10px rgba(var(--button-color-rgb), 0.4), 0 0 20px rgba(var(--button-color-rgb), 0.6);
+    animation: pulse-opacity-glow 4s infinite ease-in-out;
+    pointer-events: none;
+}
+
+.virtual-osd-wrapper {
+    position: relative; /* Keep for frame positioning */
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto; /* Center it within the dynamic container */
+}
+
+/* --- Now Playing Display Styles --- */
+.now-playing-title {
+    font-family: 'Shlop', sans-serif;
+    text-align: center;
+    font-weight: normal;
+    margin-top: 0rem;
+    margin-bottom: 2rem;
+    font-size: clamp(2.5rem, 10vw, 4.2rem);
+    color: rgba(0, 0, 0);
+    line-height: 1.3;
+    -webkit-text-stroke: 1px #00b500;
+    animation: pulse-text-glow 4s infinite ease-in-out;
+    letter-spacing: 0.5rem;
+}
+
+.now-playing-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: clamp(0.85rem, 4.5vw, 1.5rem);
+}
+
+/* NEW: Styling for each row (e.g., Title row, Artist row) */
+.info-row {
+    display: flex;
+    align-items: baseline; /* Aligns the label and the start of the data text */
+    gap: 0.75rem;
+}
+
+/* EDITED: Styles for the static label (Title, Artist, Album) */
+.info-row strong {
+    flex-shrink: 0;
+    font-family: 'Shlop', sans-serif;
+    font-size: 1.8rem;
+    font-weight: normal;
+    color: var(--button-color);
+    opacity: 0.8;
+    animation: pulse-text-glow 4s infinite ease-in-out;
+}
+
+/* NEW: The container that hides the overflow of the scrolling text */
+.marquee-container {
+	flex-grow: 1; /* Take up all remaining horizontal space */
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+/* NEW: The actual scrolling text element */
+.marquee-container span {
+	display: inline-block;
+	/* The animation is now applied conditionally via a class */
+}
+
+/* When the container is active, animate the span inside it. */
+.marquee-container.is-marquee-active span {
+    /* Use the new continuous animation. Adjust duration as needed. */
+    animation: continuous-marquee-scroll 20s linear infinite;
+}
+
+/* NEW: Pause the scrolling animation when the user hovers over the info row */
+.info-row:hover .marquee-container.is-marquee-active span {
+	animation-play-state: paused;
+	cursor: default; /* Change cursor to indicate it's readable text */
+}
+
+/* NEW: Animation class to apply to text elements when they update */
+.animate-text-update {
+    /* Apply the new keyframes, run once, and use an ease-out curve */
+    animation: fade-slide-in-subtle 0.4s ease-out;
+}
+
+/* NEW: A static, non-scrolling row for extra track data like frequency and time. */
+.static-info-row {
+    display: flex;
+    /* We remove space-between to use gap for more direct control over spacing.
+       This prevents large, unwanted gaps between the left-aligned items. */
+    align-items: center;
+    gap: 1.5rem; /* Adjust this value to control the space between all items. */
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    padding-bottom: 1rem;
+    border-top: 1px solid rgba(var(--button-color-rgb), 0.3);
+    font-size: clamp(0.75rem, 3vw, 0.9rem);
+    color: var(--text-color);
+    opacity: 0.9;
+}
+
+/* A new reusable helper class to make a flex item grow to fill available space. */
+.flex-grow-1 {
+    flex-grow: 1;
+}
+
+/* --- REFACTORED: Tuner & Playback Layout --- */
+/* This is the main container for the entire control group.
+   It uses flexbox to stack the rows vertically. */
+.tuner-playback-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem; /* Space between the rows */
+    width: 100%;
+    /* EDITED: Match the max-width and padding of the other main containers for alignment. */
+    max-width: 725px;
+    margin: 0 auto; /* This is fine, as the parent section has vertical margin. */
+    /* EDITED: Use responsive padding to tighten spacing on small screens. */
+    padding: 0 clamp(1.5rem, 8vw, 3rem);
+    box-sizing: border-box;
+}
+
+/* This is the style for each horizontal row of buttons.
+   It uses flexbox to arrange the buttons within the row. */
+.tuner-playback-row {
+    display: flex;
+    justify-content: space-between; /* Pushes PRESET and TUNE buttons to the edges */
+    width: 100%;
+}
+
+/* Override for the middle playback controls to be centered. */
+.tuner-playback-container .tuner-playback-row:nth-child(3) {
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+/* NEW: A "ghost" element to create space in flexbox rows.
+   It's invisible but occupies the same space as a medium circle button. */
+.ghost-spacer {
+    /* Match the width of the sibling buttons in the row */
+    width: clamp(60px, 15vw, 80px);
+    /* Make it invisible but still take up layout space */
+    visibility: hidden;
+}
+
+/* The Favorites button container is already a div, just need to center it. */
+#favorites-button-container {
+    display: none; /* Hide by default, JS will show it for Pandora */
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+#favorites-button-container.is-visible {
+    display: flex; /* This class will be added by JS */
+}
+
+/* Apply 3D effect and sizing to all buttons in this section */
+.tuner-playback-container .btn-3d {
+    border: 3px solid var(--btn-3d-border-color);
+    font-size: 0.98rem;
+    color: var(--text-color);
+    flex-shrink: 0;
+}
+
+/* Apply the "secret formula" for responsive scaling to the buttons */
+/* EDITED: This rule now targets the smaller PRESET and TUNE buttons, matching the BACK/SETUP button size. */
+.tuner-playback-container .circle-btn-medium {
+    width: clamp(60px, 15vw, 80px);
+    height: clamp(67px, 15vw, 80px);
+    aspect-ratio: 1 / 1; /* Ensures the button is always a perfect square, preventing ovals on tall screens. */
+    font-size: clamp(0.8rem, 2.5vw, 1rem);
+}
+
+/* NEW: A dedicated class for the larger playback buttons to match the D-pad size. */
+.tuner-playback-container .playback-btn-large {
+    width: clamp(70px, 22vw, 100px);
+    height: clamp(70px, 22vw, 100px);
+}
+
+.tuner-playback-container .btn-3d svg {
+    fill: var(--text-color);
+}
+
+/* --- Branding Styles --- */
+.branding-container {
+    text-align: center;
+    margin-top: 1.5rem; /* Corresponds to Tailwind's mt-6 */
+}
+
+.branding-title {
+    font-family: 'Shlop', sans-serif;
+    color: var(--button-color);
+    font-size: 1.125rem; /* Corresponds to text-lg */
+    font-weight: 700; /* Corresponds to font-bold */
+}
+
+.branding-subtitle {
+    font-size: 0.875rem; /* Corresponds to text-sm */
+    opacity: 0.75;
+}
+
+/* NEW: Respect user preference for reduced motion.
+   This disables animations and transitions for users who are sensitive to motion. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* --- Generic Button Grid & Helper Layouts --- */
+.button-grid {
+    display: grid;
+    /* REFACTORED: Use fluid columns and gap */
+    grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 25vw, 160px), 1fr));
+    gap: var(--grid-gap);
+    /* Center the grid tracks themselves within the container */
+    justify-content: center;
+    /* Stretch items to fill the cell, ensuring consistent width */
+    justify-items: stretch;
+    align-items: stretch;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* A specific 3-column grid helper */
+.button-grid-3-col {
+    grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 25vw, 160px), 1fr));
+}
+
+/* A specific 4-column grid for sections like Sound Mode and Smart Select */
+.button-grid-4-col {
+    /* Default to a 4-column layout for larger screens */
+    grid-template-columns: repeat(auto-fit, minmax(clamp(45px, 15vw, 95px), 1fr));
+}
+
+/* A helper container to center a single button or a small group of buttons */
+.centered-button-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 540px;
+    margin: 1.5rem auto 0;
+    padding: 0 1rem 1.5rem;
+    box-sizing: border-box;
+}
+
+/* --- Generic Settings Button (for collapsible sections) --- */
+.btn-setting,
+#zone2PowerBtn { /* Target the un-classed Zone 2 button */
+    flex-grow: 1;
+    flex-basis: clamp(80px, 20vw, 120px);
+    font-size: var(--font-size-button);
+    padding: 0.8rem 0.5rem;
+    background: linear-gradient(180deg, var(--btn-3d-bg-start), var(--btn-3d-bg-end));
+    color: var(--text-color);
+    border: 1px solid var(--btn-3d-border-color);
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.6);
+    transition: box-shadow 0.1s ease, background 0.1s ease, transform 0.1s ease;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.btn-setting:hover,
+#zone2PowerBtn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-setting:active,
+#zone2PowerBtn:active {
+    background: linear-gradient(180deg, var(--btn-3d-bg-end), var(--btn-3d-bg-start));
+    box-shadow:
+        inset -2px -2px 5px rgba(255, 255, 255, 0.1),
+        inset 2px 2px 5px rgba(0, 0, 0, 0.7);
+    transform: translateY(1px);
+}
+
+.btn-setting.active,
+#zone2PowerBtn.active {
+    color: var(--button-color);
+    box-shadow:
+        inset 2px 2px 4px rgba(255, 255, 255, 0.1),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.5),
+        0 0 8px var(--button-color);
+}
+
+/* --- Generic Slider & Status Readout Styles --- */
+.slider-label {
+    color: var(--text-color);
+    opacity: 0.9;
+    font-size: var(--font-size-button);
+    white-space: nowrap;
+}
+
+.status-readout-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    background-color: rgba(var(--button-color-rgb), 0.1);
+    border-radius: 0.5rem;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.4);
+}
+
+/* --- Channel Level Display & Editor --- */
+/* Grid container for individual channel level displays */
+.channel-levels-grid {
+    display: grid;
+    /* EDITED: Reduced minmax for smaller items and added padding to prevent clipping on scale. */
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    margin: 1rem;;
+}
+
+/* Styling for a single channel level display item */
+.channel-level-item {
+    background-color: rgba(var(--button-color-rgb), 0.05);
+    border: 1px solid rgba(var(--button-color-rgb), 0.2);
+    border-radius: 0.75rem;
+    padding: 0.5rem; /* EDITED: Reduced padding for a more compact look. */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer; /* Add cursor to indicate it's selectable */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    position: relative; /* NEW: Needed for z-index to work correctly. */
+}
+
+/* Add a visual indicator for the selected channel item */
+.channel-level-item.selected {
+    border-color: var(--button-color);
+    box-shadow: 0 0 10px rgba(var(--button-color-rgb), 0.7);
+    transform: scale(1.1); /* EDITED: Slightly increased pop for visibility */
+    z-index: 2; /* NEW: Ensure the selected item pops above its neighbors. */
+}
+
+/* Styling for the channel name text (e.g., "Front Left") */
+.channel-name {
+    /* EDITED: Reduced font size for a more compact look. */
+    font-size: clamp(0.7rem, 2vw, 0.85rem);
+    opacity: 0.75;
+    margin-bottom: 0.5rem;
+}
+
+/* Styling for the channel value text (e.g., "-2.5 dB") */
+.channel-value {
+    /* EDITED: Reduced font size for a more compact look. */
+    font-size: clamp(1rem, 3.5vw, 1.4rem);
+    font-weight: bold;
+    color: var(--button-color);
+}
+
+/* Styling for the channel level editor section, which appears when an item is selected */
+.channel-level-editor {
+    margin-top: 2rem;
+    padding-top: 0.5rem;
+    border-top: 2px solid rgba(var(--button-color-rgb), 0.3);
+    /* Hide the editor by default */
+    display: none;
+}
+
+/* Show the editor when the .is-editing class is added to the main section */
+.collapsible-section.is-editing .channel-level-editor {
+    display: block;
+}
+
+/* Style for the editor title */
+.channel-level-editor h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 8px rgba(var(--button-color-rgb), 0.6);
+    text-align: center; /* Ensure title is centered */
+}
+
+/* Styling for the contextual subwoofer power controls in the editor */
+.subwoofer-power-controls {
+    display: none; /* Hidden by default */
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed rgba(var(--button-color-rgb), 0.4);
+    text-align: center; /* Center the contents */
+}
+
+/* Show the controls when the editor is in subwoofer mode */
+.channel-level-editor.is-editing-subwoofer .subwoofer-power-controls {
+    display: block;
+}
+
+.sub-editor-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    opacity: 0.8;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+/* --- Virtual OSD Styles --- */
+
+/* The content box that holds the menu text. This is the bottom layer. */
+.virtual-osd-content {
+    background-color: #000000; /* Black background */
+    color: #008000; /* Brighter green text for better readability */
+    padding: 2rem;
+    position: relative;
+    border: 2px solid rgba(var(--button-color-rgb), 0.5);
+    border-radius: 0.75rem; /* Match other bordered elements */
+}
+
+/* The frame element that holds the sliced images. This is the top layer. */
+.virtual-osd-frame {
+    /* REMOVED: The complex graphical frame is no longer needed. */
+    display: none;
+}
+
+/* Styling for the OSD title */
+.osd-title {
+    font-family: 'Shlop', sans-serif;
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    color: var(--button-color); /* Greenish-yellow for the title */
+    text-align: center;
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(var(--button-color-rgb), 0.3);
+}
+
+/* Styling for the menu list */
+.osd-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: clamp(1rem, 3.5vw, 1.2rem);
+}
+
+.osd-menu-list li {
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.25rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease;
+    white-space: nowrap; /* Prevent text from wrapping by default */
+    overflow: hidden; /* Hide the overflow for the marquee effect */
+}
+
+/* NEW: Apply the fade-in animation to list items when they are added/updated. */
+.osd-menu-list li.animate-fade-in {
+    /* This animation is defined in animations.css */
+    animation: fade-in-item 0.3s ease-out forwards;
+}
+
+/* This class is added by JS to the currently selected OSD item */
+.osd-menu-list li.is-selected {
+    background-color: var(--button-color); /* Use the bright, opaque greenish-yellow for the highlight */
+    color: var(--bg-color); /* Use the main background color for text to ensure contrast */
+    font-weight: bold;
+}
+
+/* The span inside the list item that holds the text. */
+.osd-menu-list li span {
+    display: inline-block;
+}
+
+/* When the LI has the scrolling class, animate the span inside it. */
+.osd-menu-list li.is-scrolling span {
+    /* Use the new continuous animation. Adjust duration as needed. */
+    animation: continuous-marquee-scroll 20s linear infinite;
+}
+
+/* Pause scrolling on hover, as requested */
+.osd-menu-list li:hover.is-scrolling span {
+    animation-play-state: paused;
+}
+
+/* Styling for the pagination text */
+.osd-pagination {
+    text-align: right;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(var(--button-color-rgb), 0.3);
+    font-size: var(--font-size-button);
+    color: var(--button-color);
+    opacity: 0.8;
+}
+
+/* NEW: Style for actionable context menu items to look like buttons */
+.osd-menu-list li.is-actionable {
+    cursor: pointer;
+}
+
+/* NEW: Hover effect for actionable items */
+.osd-menu-list li.is-actionable:hover {
+background-color: rgba(var(--text-color-rgb), 0.1);
+}
+
+/* NEW: The selected actionable item should be brightly highlighted */
+.osd-menu-list li.is-actionable.is-selected {
+    background-color: var(--button-color);
+    color: var(--bg-color);
+    box-shadow: 0 0 12px rgba(var(--button-color-rgb), 0.7);
+}
+
+/* Media queries are being re-introduced for responsiveness */
+
+/* --- Media Queries for Larger Screens --- */
+@media (min-width: 768px) {
+    body {
+        padding: 2rem;
+        gap: 2rem;
+    }
+}
+
+/* --- NEW: Disconnected State Overlay --- */
+/* This provides visual feedback when the connection to the receiver is lost. */
+body.receiver-disconnected::after {
+    content: 'Connection to receiver lost. Attempting to reconnect...';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(var(--bg-color-rgb), 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    box-sizing: border-box;
+    z-index: 999; /* Below toast notifications (z-index 1000) */
+    backdrop-filter: blur(8px); /* Match toast blur */
+    /* Apply Shlop font and styling from toasts */
+    font-family: 'Shlop', sans-serif;
+    font-size: 2.5rem; /* Larger for full-screen impact */
+    font-weight: normal;
+    color: rgba(45, 0, 0, 1);
+    -webkit-text-stroke: 1.5px var(--mute-on-color); /* Error color outline */
+    text-shadow: 0 0 40px var(--mute-on-color); /* Error color glow */
+}
+
+/* --- NEW: Standby State UI --- */
+/* This dims and disables interactive elements when the receiver is in standby. */
+/* The .receiver-standby class is added to the body by ui.js when power is off. */
+.receiver-standby section, /* Dims the Inputs section */
+.receiver-standby #main-controls,
+.receiver-standby #dynamic-display-container,
+.receiver-standby #nav-pad,
+.receiver-standby #tuner-playback-section,
+.receiver-standby .bordered-section, /* Dims Smart Select, Sound Mode, etc. */
+.receiver-standby .collapsible-section,
+.receiver-standby body > h2.section-title {
+    opacity: 0.5;
+    pointer-events: none; /* Prevents clicks, taps, and hover effects */
+    transition: opacity 0.4s ease-out;
+}
+
+/* We still want the power button and zone select to be clickable. */
+.receiver-standby .zone-power-wrapper {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* However, we want to disable the other buttons *within* that wrapper. */
+.receiver-standby .zone-select-container,
+.receiver-standby #main-sleep-btn {
+    opacity: 0.5;
+    pointer-events: none;
+}

@@ -1,0 +1,48 @@
+/*
+ * styles/notifications.css
+ * Styles for the toast notification system.
+ */
+
+/* Container for all toast notifications */
+.notification-container {
+    position: absolute;
+    top: 0; /* Initial value, will be updated by JS */
+    left: 50%;
+    transform: translateX(-50%); /* Center the container horizontally */
+    z-index: 1000; /* Ensure it's on top of other content */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* Space between multiple toasts */
+    /* This is the key: The container itself should not capture mouse events. */
+    pointer-events: none;
+}
+
+/* Individual toast notification styling */
+.toast {
+    background-color: rgba(141, 176, 0, 0.25);
+    color: #3bcc3ba6;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 2px solid rgb(180 255 0 / 10%);
+    box-shadow: 0 -7px 45px rgb(221 255 90);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    font-family: 'Shlop', sans-serif;
+    font-size: 3rem;
+    max-width: 320px;
+    text-align: center;
+    pointer-events: auto;
+}
+
+/* State when the toast is visible */
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Style for error messages */
+.toast.error {
+    background-color: rgba(191, 54, 62, 0.25); /* A slightly transparent error red */
+}
