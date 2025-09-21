@@ -4,8 +4,12 @@ A custom, full-stack web application that serves as a sophisticated remote contr
 
 This project was born out of a desire for a more responsive, feature-rich, and visually appealing remote control than the official app, with the ability to run as a simple, standalone server on a home network.
 
-<img width="247" height="2958" alt="image" src="https://github.com/user-attachments/assets/d39ca03f-56d3-4ad2-8e04-812114958a28" />
-
+<table>
+  <tr>
+    <td valign="top"><img width="247" height="2958" alt="image" src="https://github.com/user-attachments/assets/d39ca03f-56d3-4ad2-8e04-812114958a28" /></td>
+    <td valign="top"><img width="592" height="2803" alt="image" src="https://github.com/user-attachments/assets/3049270c-c91b-4776-8418-3fd8054f386f" /></td>
+  </tr>
+</table>
 
 
 ## Features
