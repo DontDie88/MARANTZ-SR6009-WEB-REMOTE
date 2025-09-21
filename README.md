@@ -6,10 +6,11 @@ This project was born out of a desire for a more responsive, feature-rich, and v
 
 <table>
   <tr>
-    <td valign="top"><img width="247" height="2958" alt="image" src="https://github.com/user-attachments/assets/d39ca03f-56d3-4ad2-8e04-812114958a28" /></td>
+    <td valign="top"><img width="257" height="2946" alt="image" src="https://github.com/user-attachments/assets/3703e0ad-6af5-41fe-80ba-e47cc18116e1" /></td>
     <td valign="top"><img width="592" height="2803" alt="image" src="https://github.com/user-attachments/assets/3049270c-c91b-4776-8418-3fd8054f386f" /></td>
   </tr>
 </table>
+
 
 
 ## Features
