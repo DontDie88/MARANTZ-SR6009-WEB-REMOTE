@@ -6,8 +6,8 @@ This project was born out of a desire for a more responsive, feature-rich, and v
 
 <table>
   <tr>
-    <td valign="top" width "157"><img width="257" height="2946" alt="image" src="https://github.com/user-attachments/assets/3703e0ad-6af5-41fe-80ba-e47cc18116e1" /></td>
-    <td valign="top" width "392"><img width="592" height="2803" alt="image" src="https://github.com/user-attachments/assets/3049270c-c91b-4776-8418-3fd8054f386f" /></td>
+    <td align="center"><p><img width="247" alt="image" src="https://github.com/user-attachments/assets/3703e0ad-6af5-41fe-80ba-e47cc18116e1"></p></td>
+    <td align="center"><p><img width="592" alt="image" src="https://github.com/user-attachments/assets/3049270c-c91b-4776-8418-3fd8054f386f"></p></td>
   </tr>
 </table>
 
