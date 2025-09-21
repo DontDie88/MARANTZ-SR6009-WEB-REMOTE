@@ -8,11 +8,9 @@ This project was born out of a desire for a more responsive, feature-rich, and v
   <tr>
     <td align="center"><p><img width="247" alt="image" src="https://github.com/user-attachments/assets/3703e0ad-6af5-41fe-80ba-e47cc18116e1"></p></td>
     <td align="center"><p><img width="592" alt="image" src="https://github.com/user-attachments/assets/3049270c-c91b-4776-8418-3fd8054f386f"></p></td>
-    <td align="center"><p><img width="592" alt="image" src="https://github.com/user-attachments/assets/a99c1f94-e6bd-4133-abe7-613f6a0e249f"></p></td>
+    <td align="center"><p><img width="592" alt="image" src="https://github.com/user-attachments/assets/b4ef4130-fb33-4ae3-89e2-37171c3217e6"></p></td>
   </tr>
 </table>
-
-
 
 ## Features
 
