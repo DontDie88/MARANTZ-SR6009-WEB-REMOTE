@@ -92,20 +92,6 @@ If you want to run the application from the source code to modify or contribute 
 
 5.  **Access the Remote:** Open your browser and go to `http://127.0.0.1:5000`.
 
-## Building the Executable
-
-To bundle the application into a single `.exe` file for distribution, `PyInstaller` is used.
-
-1.  Make sure you have followed the developer setup and installed all dependencies.
-2.  Ensure PyInstaller is installed: `pip install pyinstaller`
-3.  Navigate to the `Application` directory.
-4.  Run the build command using the provided spec file:
-    ```bash
-    pyinstaller MarantzRemote.spec
-    ```
-5.  The final `MarantzRemote.exe` will be located in the `dist/MarantzRemote` folder.
-
-## Required Files to Run from Source
 
 To run this program from its source code, you will need the following files and directories from the `Application` folder, maintaining their structure:
 
